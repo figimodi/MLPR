@@ -1,0 +1,24 @@
+# Fdb version 4
+["pdflatex"] 1682516193 "c:/Users/grfil/OneDrive/Documenti/PoliTo/Machine Learning/project/Documentation.tex" "Documentation.pdf" "Documentation" 1682516194 0
+  "Documentation.aux" 1682516194 32 3985256e7290058c681f74d7a3565a19 "pdflatex"
+  "Documentation.tex" 1682516192 166 b0fc76ffdef697af3842bfbdb30e4a5c ""
+  "c:/Users/grfil/OneDrive/Documenti/PoliTo/Machine Learning/project/Documentation.tex" 1682516192 166 b0fc76ffdef697af3842bfbdb30e4a5c ""
+  "c:/texlive/2023/texmf-dist/fonts/map/fontname/texfonts.map" 1682076605 3524 cb3e574dea2d1052e39280babc910dc8 ""
+  "c:/texlive/2023/texmf-dist/fonts/tfm/public/cm/cmmi12.tfm" 1682075755 1524 4414a8315f39513458b80dfc63bff03a ""
+  "c:/texlive/2023/texmf-dist/fonts/tfm/public/cm/cmr12.tfm" 1682075755 1288 655e228510b4c2a1abe905c368440826 ""
+  "c:/texlive/2023/texmf-dist/fonts/tfm/public/cm/cmr17.tfm" 1682075755 1292 296a67155bdbfc32aa9c636f21e91433 ""
+  "c:/texlive/2023/texmf-dist/fonts/tfm/public/cm/cmsy10.tfm" 1682075755 1124 6c73e740cf17375f03eec0ee63599741 ""
+  "c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb" 1682075049 32722 d7379af29a190c3f453aba36302ff5a9 ""
+  "c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb" 1682075049 32362 bc3f3eec7ab7d65fe700963d4017d32c ""
+  "c:/texlive/2023/texmf-dist/tex/latex/base/article.cls" 1682077342 20144 d5ecf0a5140c8d8d8b72cbe86e320eff ""
+  "c:/texlive/2023/texmf-dist/tex/latex/base/size12.clo" 1682077342 8449 c314623021fbddd0180c05345324933c ""
+  "c:/texlive/2023/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def" 1682077313 29940 9473d58112bc8a88f5505b823a053dde ""
+  "c:/texlive/2023/texmf-dist/web2c/texmf.cnf" 1682074933 40967 d940221f8762fd5848760382d97d1226 ""
+  "c:/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1682080253 4683147 c40e3a1ac4f9bf67fe64e54fe7cecde0 ""
+  "c:/texlive/2023/texmf-var/web2c/pdftex/pdflatex.fmt" 1682080352 7887299 be5a549cf01b34ca77238f1581a244cf ""
+  "c:/texlive/2023/texmf.cnf" 1682080227 713 e69b156964470283e0530f5060668171 ""
+  (generated)
+  "Documentation.aux"
+  "Documentation.log"
+  "Documentation.pdf"
+  (rewritten before read)
