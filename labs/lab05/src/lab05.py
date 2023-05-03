@@ -25,11 +25,32 @@ def split_db_2to1(D, L, seed=0):
     LTE = L[idxTest]
     return (DTR, LTR), (DTE, LTE)
 
+def k_fold(D, L, K, i, seed=0):
+    np.random.seed(seed)
+    idx = np.random.permutation(D.shape[1])
+    idxTest = idx[int(i*D.shape[1]/K):int((i+1)*D.shape[1]/K)]
+    idxTrain0 = idx[:int(i*D.shape[1]/K)]
+    idxTrain1 = idx[int((i+1)*D.shape[1]/K):]
+    idxTrain = np.hstack([idxTrain0, idxTrain1])
+    DTR = D[:, idxTrain]
+    DTE = D[:, idxTest]
+    LTR = L[idxTrain]
+    LTE = L[idxTest]
+
+    return (DTR, LTR), (DTE, LTE)
+
 def compute_mu_C(D, L, label):
     DL = D[:, L == label]
     mu = DL.mean(1).reshape(DL.shape[0], 1)
     DLC = (DL - mu)
     C = 1/DLC.shape[1]*np.dot(DLC, DLC.T)
+    return (mu, C)
+
+def compute_mu_C_NB(D, L, label):
+    DL = D[:, L == label]
+    mu = DL.mean(1).reshape(DL.shape[0], 1)
+    DLC = (DL - mu)
+    C = np.multiply(1/DLC.shape[1]*np.dot(DLC, DLC.T), np.identity(DL.shape[0]))
     return (mu, C)
 
 def logpdf_GAU_ND(X, mu, C):
@@ -64,10 +85,20 @@ if __name__ == '__main__':
     D, L = load_iris()
     (DTR, LTR), (DTE, LTE) = split_db_2to1(D, L)
 
+    # MVG
     # compute mean and covariance for all classes
     (mu0, C0) = compute_mu_C(DTR, LTR, 0)
     (mu1, C1) = compute_mu_C(DTR, LTR, 1)
     (mu2, C2) = compute_mu_C(DTR, LTR, 2)
+
+    # Naive-Bayes
+    # compute mean and covariance for all classes
+    # (mu0, C0) = compute_mu_C_NB(DTR, LTR, 0)
+    # (mu1, C1) = compute_mu_C_NB(DTR, LTR, 1)
+    # (mu2, C2) = compute_mu_C_NB(DTR, LTR, 2)
+
+    # Tied-Covariance
+    C0 = C1 = C2 = 1/DTR.shape[1]*(C0*(LTR == 0).sum() + C1*(LTR == 1).sum() + C2*(LTR == 2).sum())
 
     # compute score matrix S of shape [3, 50], which is the number of classes times the number of samples in the test set
     S0 = logpdf_GAU_ND(DTE, mu0, C0)
