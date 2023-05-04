@@ -1,3 +1,6 @@
+import numpy as np
+import scipy as sp
+
 def vcol(mat):
     return mat.reshape((mat.size, 1)) 
 

@@ -1,6 +1,4 @@
-import numpy as np
-import scipy as sp
-import matplotlib.pyplot as plt
+from mllibrary import *
 
 if __name__ == '__main__':
     D, L = load('Train.txt')
@@ -27,7 +25,7 @@ if __name__ == '__main__':
 
         # MVG
         # compute mean and covariance for all classes
-        (mu0, C0) = MLLibrary.compute_mu_C(DTR, LTR, 0, False)
+        (mu0, C0) = compute_mu_C(DTR, LTR, 0, False)
         (mu1, C1) = compute_mu_C(DTR, LTR, 1, False)
 
         # Naive-Bayes
