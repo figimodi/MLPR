@@ -53,8 +53,7 @@ if __name__ == '__main__':
         # SPost = SJoint/SMarginal
 
         # working with logs
-        logSPrior = vcol(np.array([(LTE == 0).sum()/len(LTE), (LTE == 1).sum()/len(LTE)]))
-        logSJoint = S + logSPrior
+        logSJoint = S + 1/2
         logSMarginal = vrow(sp.special.logsumexp(logSJoint, axis=0))
         logSPost = logSJoint - logSMarginal
         SPost = np.exp(logSPost)
