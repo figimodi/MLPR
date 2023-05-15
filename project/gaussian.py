@@ -4,7 +4,7 @@ if __name__ == '__main__':
     D, L = load('Train.txt')
 
     # folds
-    K = len(L)
+    K = 10
 
     # accuracy
     acc = 0
@@ -25,8 +25,8 @@ if __name__ == '__main__':
 
         # MVG
         # compute mean and covariance for all classes
-        (mu0, C0) = compute_mu_C(DTR, LTR, 0, False)
-        (mu1, C1) = compute_mu_C(DTR, LTR, 1, False)
+        # (mu0, C0) = compute_mu_C(DTR, LTR, 0, False)
+        # (mu1, C1) = compute_mu_C(DTR, LTR, 1, False)
 
         # Naive-Bayes
         # compute mean and covariance for all classes
@@ -36,8 +36,7 @@ if __name__ == '__main__':
         # Tied-Covariance
         # C0 = C1 = 1/DTR.shape[1]*(C0*(LTR == 0).sum() + C1*(LTR == 1).sum())
 
-
-        # compute score matrix S of shape [2, 50], which is the number of classes times the number of samples in the test set
+        # compute score matrix S of shape [2, x], which is the number of classes times the number of samples in the test set
         S0 = logpdf_GAU_ND(DTE, mu0, C0)
         S1 = logpdf_GAU_ND(DTE, mu1, C1)
 
@@ -59,6 +58,8 @@ if __name__ == '__main__':
         SPost = np.exp(logSPost)
 
         PL = np.argmax(SPost, 0)
+
+        # TODO Compute ratio instead argmax ?
 
         acc += (PL == LTE).sum()
 

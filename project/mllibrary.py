@@ -176,3 +176,19 @@ def k_fold(D, L, K, i, seed=0):
     LTE = L[idxTest]
 
     return (DTR, LTR), (DTE, LTE)
+
+def logreg_obj_wrap(DTR, LTR, l):
+    def logreg_obj(v):
+        w, b = v[0:-1], v[-1]
+        J = 0
+
+        for i in range(0, DTR.shape[1]):
+            zi = 2*LTR[i] - 1
+            J += np.logaddexp(0, -zi*(np.dot(w, DTR[:, i]) + b))
+
+        J /= DTR.shape[1]
+        J += l/2*np.linalg.norm(w)**2
+
+        return J
+
+    return logreg_obj
