@@ -1,5 +1,7 @@
 import numpy as np
 import scipy as sp
+import matplotlib.pyplot as plt
+import sys
 
 def vcol(mat):
     return mat.reshape((mat.size, 1)) 
@@ -192,3 +194,75 @@ def logreg_obj_wrap(DTR, LTR, l):
         return J
 
     return logreg_obj
+
+def opt_bayes(prior, Cfn, Cfp, s_log_ratio):
+
+    t = -np.log((prior * Cfn)/((1 - prior) * Cfp))
+    c = s_log_ratio > t
+    
+    return c
+
+def normalized_bayes_risk(prior, Cfn, Cfp, s_log_ratio, labels):
+
+    c = opt_bayes(prior, Cfn, Cfp, s_log_ratio)
+
+    CMD = np.zeros((2, 2), dtype=int)
+
+    for i, p in enumerate(c):
+        CMD[int(p), int(labels[i])] += 1
+
+    FNR = CMD[0, 1]/(CMD[0, 1] + CMD[1, 1])
+    FPR = CMD[1, 0]/(CMD[0, 0] + CMD[1, 0])
+
+    DCF = prior*Cfn*FNR+(1-prior)*Cfp*FPR
+
+    Bdummy = np.min([prior * Cfn, (1 - prior) * Cfp])
+    return DCF / Bdummy
+
+def DCF_min(prior, Cfn, Cfp, s_log_ratio, labels):
+    
+    Bdummy = np.min([prior * Cfn, (1 - prior) * Cfp])
+    DCF = np.array([])
+
+    for t in s_log_ratio:
+        #print(f"analysing threshold {t} for min dcf")
+        c = s_log_ratio > t
+        CMD = np.zeros((2, 2), dtype=int)
+
+        for i, p in enumerate(c):
+            #print(f"computing sample number {i} for confusion matrix")
+            CMD[int(p), int(labels[i])] += 1
+
+        FNR = CMD[0, 1]/(CMD[0, 1] + CMD[1, 1])
+        FPR = CMD[1, 0]/(CMD[0, 0] + CMD[1, 0])
+
+        DCF = np.append(DCF, (prior*Cfn*FNR+(1-prior)*Cfp*FPR)/Bdummy)
+
+    return np.min(DCF)
+
+def bayer_error_plots(prior, Cfn, Cfp, s_log_ratio, labels):
+    effPriorLogOdds = np.linspace(-3, 3, 21)
+
+    dcf = np.array([])
+    mindcf = np.array([])
+
+    effective_prior = 1/(np.exp(-effPriorLogOdds) + 1)
+
+    for i, p in enumerate(effective_prior):
+        print(f"compute for point {i}")
+        dcf = np.append(dcf, normalized_bayes_risk(p, 1, 1, s_log_ratio, labels))
+        mindcf = np.append(mindcf, DCF_min(p, 1, 1, s_log_ratio, labels))
+
+    np.save("bayes_errors_dcf", dcf)
+    np.save("bayes_errors_mindcf", mindcf)
+
+    plt.plot(effPriorLogOdds, dcf, label='DCF', color='r')
+    plt.plot(effPriorLogOdds, mindcf, label='min DCF', color='b')
+    plt.ylim([0, 1.1])
+    plt.xlim([-3, 3])
+
+    plt.show()
+
+    return
+
+    return
