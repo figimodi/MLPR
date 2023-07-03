@@ -2,6 +2,8 @@ import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
 import sys
+import seaborn as sb
+import pandas as pd
 
 def vcol(mat):
     return mat.reshape((mat.size, 1)) 
@@ -22,58 +24,33 @@ def load(file_name):
 
     return np.hstack(Dlist), L
 
-def split_db_2to1(D, L, seed=0):
-    nTrain = int(D.shape[1]*2.0/3.0)
+def k_fold(D, L, K, i, seed=0):
     np.random.seed(seed)
     idx = np.random.permutation(D.shape[1])
-    idxTrain = idx[0:nTrain]
-    idxTest = idx[nTrain:]
+    idxTest = idx[int(i*D.shape[1]/K):int((i+1)*D.shape[1]/K)]
+    idxTrain0 = idx[:int(i*D.shape[1]/K)]
+    idxTrain1 = idx[int((i+1)*D.shape[1]/K):]
+    idxTrain = np.hstack([idxTrain0, idxTrain1])
     DTR = D[:, idxTrain]
     DTE = D[:, idxTest]
     LTR = L[idxTrain]
     LTE = L[idxTest]
+
     return (DTR, LTR), (DTE, LTE)
 
-def compute_mu_C(D, L, label, NB=False):
-    DL = D[:, L == label]
-    mu = DL.mean(1).reshape(DL.shape[0], 1)
-    DLC = (DL - mu)
-    C = 1/DLC.shape[1]*np.dot(DLC, DLC.T)
-
-    if NB:
-        C = np.multiply(C, np.identity(DL.shape[0]))
-
-    return (mu, C)   
-
-def logpdf_GAU_ND(X, mu, C):
-    # X array of shape(M, N)
-    # mu array of shape (M, 1)
-    # C array of shape (M, M) that represents the covariance matrix
-    M = C.shape[0] #number of features
-    # N = X.shape[1] #number of samples
-    invC = np.linalg.inv(C) #C^-1
-    logDetC = np.linalg.slogdet(C)[1] #log|C|
+def feature_plot_binary(feature, D, L, classes):
+    vetAttr = D[feature, :]
     
-    # with the for loop:
-    # logN = np.zeros(N)
-    # for i, sample in enumerate(X.T):
-    #     const = -0.5*M*np.log(2*np.pi)
-    #     dot1 = np.dot((sample.reshape(M, 1) - mu).T, invC)
-    #     dot2 = np.dot(dot1, sample.reshape(M, 1) - mu)
-    #     logN[i] = const - 0.5*logDetC - 0.5*dot2
+    plt.figure()
+    for classIndex, className in enumerate(classes):
+        mask = (L == classIndex)
+        data = vetAttr[mask]
+        plt.hist(data, bins = 50, density=True, alpha=0.3, label=f"{className}")
+    plt.savefig(f"features\\feature{feature}.png")
 
-    XC = (X - mu).T # XC has shape (N, M)
-    const = -0.5*M*np.log(2*np.pi)
+    return
 
-    # sum(1) sum elements of the same row togheter
-    # multiply make an element wise multiplication
-    logN = const - 0.5*logDetC - 0.5*np.multiply(np.dot(XC, invC), XC).sum(1)
-
-    # logN is an array of length N (# of samples)
-    # each element represents the log-density of each sample
-    return logN
-
-def PCA(D, L, m=2):
+def PCA_plot(D, L, m=2):
     mu = D.mean(1) # mu will be a row vector so we have to convert it into a column vector
     Dc = D - vcol(mu) # centered dataset D - the column representation of mu
     C = (1/D.shape[1])*np.dot(Dc, Dc.T) # C is the covariance matrix
@@ -95,7 +72,6 @@ def PCA(D, L, m=2):
 
     # Create the figure
     fig = plt.figure(figsize=(6, 6))
-    fig.suptitle(f'PCA for {m} components')
 
     if m == 2:
         plt.scatter(D0[0], D0[1], label='Spoofed')
@@ -106,9 +82,21 @@ def PCA(D, L, m=2):
         ax.scatter(D0[0], D0[1], D0[2], label='Spoofed')
         ax.scatter(D1[0], D1[1], D1[2], label='Authentic')
 
+    plt.savefig(f"images\\PCA_scatter_{m}.png")
+
+    if m == 2:
+        plt.figure()
+        plt.hist(D0[0], bins = 50, density=True, alpha=0.3, label="Spoofed")
+        plt.hist(D1[0], bins = 50, density=True, alpha=0.3, label="Authentic")
+        plt.savefig(f"images\\PCA_hist_0.png")
+        plt.figure()
+        plt.hist(D0[1], bins = 50, density=True, alpha=0.3, label="Spoofed")
+        plt.hist(D1[1], bins = 50, density=True, alpha=0.3, label="Authentic")
+        plt.savefig(f"images\\PCA_hist_1.png")
+
     return Dp
 
-def LDA(D, L, m=2):
+def LDA_plot(D, L, m=2):
     # create the matrix related to the specific classes
     D0 = D[:, L==0]
     D1 = D[:, L==1]
@@ -152,8 +140,7 @@ def LDA(D, L, m=2):
 
     # Create the figure
     fig = plt.figure(figsize=(6, 6))
-    fig.suptitle(f'LDA for {m} components')
-
+    
     if m == 2:
         plt.scatter(D0[0], D0[1], label='Spoofed')
         plt.scatter(D1[0], D1[1], label='Authentic')
@@ -163,37 +150,81 @@ def LDA(D, L, m=2):
         ax.scatter(D0[0], D0[1], D0[2], label='Spoofed')
         ax.scatter(D1[0], D1[1], D1[2], label='Authentic')
 
+    plt.savefig(f"images\\LDA_scatter_{m}.png")
+
+    if m == 2:
+        plt.figure()
+        plt.hist(D0[0], bins = 50, density=True, alpha=0.3, label="Spoofed")
+        plt.hist(D1[0], bins = 50, density=True, alpha=0.3, label="Authentic")
+        plt.savefig(f"images\\LDA_hist_0.png")
+        plt.figure()
+        plt.hist(D0[1], bins = 50, density=True, alpha=0.3, label="Spoofed")
+        plt.hist(D1[1], bins = 50, density=True, alpha=0.3, label="Authentic")
+        plt.savefig(f"images\\LDA_hist_1.png")
+
     return Dp
 
-def k_fold(D, L, K, i, seed=0):
-    np.random.seed(seed)
-    idx = np.random.permutation(D.shape[1])
-    idxTest = idx[int(i*D.shape[1]/K):int((i+1)*D.shape[1]/K)]
-    idxTrain0 = idx[:int(i*D.shape[1]/K)]
-    idxTrain1 = idx[int((i+1)*D.shape[1]/K):]
-    idxTrain = np.hstack([idxTrain0, idxTrain1])
-    DTR = D[:, idxTrain]
-    DTE = D[:, idxTest]
-    LTR = L[idxTrain]
-    LTE = L[idxTest]
+def heatmaps_binary(D, L):
+    DT = D.T
+    D_auth = D[:, L==1].T
+    D_spoofed = D[:, L==0].T
 
-    return (DTR, LTR), (DTE, LTE)
+    df = pd.DataFrame(DT)
+    corr = df.corr()
+    plt.figure()
+    sb.heatmap(corr, cmap="Blues")
+    plt.savefig("images\\heatmap.png")
+    
+    df = pd.DataFrame(D_auth)
+    corr = df.corr()
+    plt.figure()
+    sb.heatmap(corr, cmap="Blues")
+    plt.savefig("images\\heatmap_auth.png")
+    
+    df = pd.DataFrame(D_spoofed)
+    corr = df.corr()
+    plt.figure()
+    sb.heatmap(corr, cmap="Blues")
+    plt.savefig("images\\heatmap_spoofed.png")
 
-def logreg_obj_wrap(DTR, LTR, l):
-    def logreg_obj(v):
-        w, b = v[0:-1], v[-1]
-        J = 0
+def compute_mu_C(D, L, label, NB=False):
+    DL = D[:, L == label]
+    mu = DL.mean(1).reshape(DL.shape[0], 1)
+    DLC = (DL - mu)
+    C = 1/DLC.shape[1]*np.dot(DLC, DLC.T)
 
-        for i in range(0, DTR.shape[1]):
-            zi = 2*LTR[i] - 1
-            J += np.logaddexp(0, -zi*(np.dot(w, DTR[:, i]) + b))
+    if NB:
+        C = np.multiply(C, np.identity(DL.shape[0]))
 
-        J /= DTR.shape[1]
-        J += l/2*np.linalg.norm(w)**2
+    return (mu, C)   
 
-        return J
+def logpdf_GAU_ND(X, mu, C):
+    # X array of shape(M, N)
+    # mu array of shape (M, 1)
+    # C array of shape (M, M) that represents the covariance matrix
+    M = C.shape[0] #number of features
+    # N = X.shape[1] #number of samples
+    invC = np.linalg.inv(C) #C^-1
+    logDetC = np.linalg.slogdet(C)[1] #log|C|
+    
+    # with the for loop:
+    # logN = np.zeros(N)
+    # for i, sample in enumerate(X.T):
+    #     const = -0.5*M*np.log(2*np.pi)
+    #     dot1 = np.dot((sample.reshape(M, 1) - mu).T, invC)
+    #     dot2 = np.dot(dot1, sample.reshape(M, 1) - mu)
+    #     logN[i] = const - 0.5*logDetC - 0.5*dot2
 
-    return logreg_obj
+    XC = (X - mu).T # XC has shape (N, M)
+    const = -0.5*M*np.log(2*np.pi)
+
+    # sum(1) sum elements of the same row togheter
+    # multiply make an element wise multiplication
+    logN = const - 0.5*logDetC - 0.5*np.multiply(np.dot(XC, invC), XC).sum(1)
+
+    # logN is an array of length N (# of samples)
+    # each element represents the log-density of each sample
+    return logN
 
 def opt_bayes(prior, Cfn, Cfp, s_log_ratio):
 

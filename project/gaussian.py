@@ -20,6 +20,9 @@ if __name__ == '__main__':
     # (DTR, LTR), (DTE, LTE) = split_db_2to1(DLDA2, L) # without PCA or/and LDA
     # (DTR, LTR), (DTE, LTE) = split_db_2to1(DLDA3, L) # without PCA or/and LDA 
     
+    logRatioCumulative = np.array([])
+    cumulativeLabels = np.array([])
+
     for i in range(0, K):
         (DTR, LTR), (DTE, LTE) = k_fold(D, L, K, i)
 
@@ -51,19 +54,24 @@ if __name__ == '__main__':
         # SMarginal = vrow(SJoint.sum(0))
         # SPost = SJoint/SMarginal
 
+        p = 0.09
+        logP = np.log(p/(1-p))
+
         # working with logs
-        logSJoint = S + 1/2
-        logSMarginal = vrow(sp.special.logsumexp(logSJoint, axis=0))
-        logSPost = logSJoint - logSMarginal
-        SPost = np.exp(logSPost)
+        logRatio = S[1, :] - S[0, :]
+        logRatioCumulative = np.append(logRatioCumulative, logRatio)
+        cumulativeLabels = np.append(cumulativeLabels, LTE)
 
-        PL = np.argmax(SPost, 0)
-
-        # TODO Compute ratio instead argmax ?
+        PL = logRatio > -logP
 
         acc += (PL == LTE).sum()
 
     acc /= len(L)
     err = 1 - acc
 
-    print(acc)
+    dcf = normalized_bayes_risk(p, 1, 1, logRatioCumulative, cumulativeLabels)
+    mindcf = DCF_min(p, 1, 1, logRatioCumulative, cumulativeLabels)
+
+    print(f"accuray: {acc}")
+    print(f"min dcf: {mindcf}")
+    print(f"actual dcf: {dcf}")
