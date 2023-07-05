@@ -1,38 +1,60 @@
-from mllibrary import *
+from mllib import *
 
 if __name__ == '__main__':
     D, L = load('Train.txt')
+    
+    # DPCA9 = PCA(D, L, 9)
+    # DPCA8 = PCA(D, L, 8)
+    DPCA7 = PCA(D, L, 7)
+    # DPCA6 = PCA(D, L, 6)
+
+    zScoreD = z_score(DPCA7)
+    expD = expand_feature_space(zScoreD)
 
     # folds
-    K = 5
+    K = 10
 
     # lambda
-    l = 1e-3
+    l = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1, 10]
 
     # threshold
-    t = 0
+    p = 1/11
+    t = -np.log(p/(1-p))
 
-    # accuracy
-    acc = 0
+    for li in l:
+         # accuracy
+        acc = 0
+        logRatioCumulative = np.array([])
+        cumulativeLabels = np.array([])
 
-    for i in range(0, K):
-        (DTR, LTR), (DTE, LTE) = k_fold(D, L, K, i)
+        for i in range(0, K):
+            (DTR, LTR), (DTE, LTE) = k_fold(expD, L, K, i)
 
-        logreg_obj = logreg_obj_wrap(DTR, LTR, l)
+            # use maxfun=[>1500], maxiter[>30], factr=[<10**7] to increment precision
+            x0 = np.zeros(DTR.shape[0] + 1)
+            x, f, d = sp.optimize.fmin_l_bfgs_b(logreg_obj_weight_wrap(DTR, LTR, li, 0.5), x0)
 
-        # use maxfun=[>1500], maxiter[>30], factr=[<10**7] to increment precision
-        x0 = np.zeros(DTR.shape[0] + 1)
-        x, f, d = sp.optimize.fmin_l_bfgs_b(logreg_obj, x0, approx_grad=True, factr=10**7, maxfun=15000, maxiter=30)
+            w, b = x[0:-1], x[-1]
+            S = np.dot(w, DTE) + b
 
-        w, b = x[0:-1], x[-1]
-        S = np.dot(w, DTE) + b
-        
-        PL = S > t
+            empp = LTR.sum()/LTR.shape[0]
+            logempp = np.log(empp/(1 - empp))
 
-        acc += (PL == LTE).sum()
+            PL = S > t
 
-    acc /= len(L)
-    err = 1 - acc
+            logRatioCumulative = np.append(logRatioCumulative, S)
+            cumulativeLabels = np.append(cumulativeLabels, LTE)
 
-    print(acc)
-    
+            acc += (PL == LTE).sum()
+
+        acc /= len(L)
+        err = 1 - acc
+
+        dcf = normalized_bayes_risk(p, 1, 1, logRatioCumulative, cumulativeLabels)
+        mindcf = DCF_min(p, 1, 1, logRatioCumulative, cumulativeLabels)
+
+        print(f"using lambda={li}")
+        print(f"accuray: {acc}")
+        print(f"min dcf: {mindcf}")
+        print(f"actual dcf: {dcf}") 
+        print("___________________________________")

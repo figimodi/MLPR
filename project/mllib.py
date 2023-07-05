@@ -50,6 +50,37 @@ def feature_plot_binary(feature, D, L, classes):
 
     return
 
+def feature_scatter_binary(f1, f2, D, L, classes):
+    vetAttr1 = D[f1, :]
+    vetAttr2 = D[f2, :]
+    
+    fig = plt.figure(figsize=(6, 6))
+    for classIndex, className in enumerate(classes):
+        mask = (L == classIndex)
+        D0 = vetAttr1[mask]
+        D1 = vetAttr2[mask]
+        plt.scatter(D0, D1)
+    plt.savefig(f"features\\ftr_{f1}_{f2}.png")
+    plt.close()
+
+def PCA(D, L, m):
+    mu = D.mean(1) # mu will be a row vector so we have to convert it into a column vector
+    Dc = D - vcol(mu) # centered dataset D - the column representation of mu
+    C = (1/D.shape[1])*np.dot(Dc, Dc.T) # C is the covariance matrix
+
+    # find eigenvalues and eigenvectors with the function numpy.linalg.eigh
+    s, U = np.linalg.eigh(C) # eigh returns the eigenvalues and the eignevectors sorted from smallest to larger
+
+    # find eigenvalues and eigenvectors with SVD 
+    #U, s, Vh = np.linalg.svd(C)
+
+    # [:, ::-1] takes all the columns and sort them in reverse order
+    # [:, 0:m] takes all the row from 0 to index m
+    P = U[:, ::-1][:, 0:m]
+    Dp = np.dot(P.T, D) # project the dataset to the new space
+
+    return Dp
+
 def PCA_plot(D, L, m=2):
     mu = D.mean(1) # mu will be a row vector so we have to convert it into a column vector
     Dc = D - vcol(mu) # centered dataset D - the column representation of mu
@@ -83,6 +114,7 @@ def PCA_plot(D, L, m=2):
         ax.scatter(D1[0], D1[1], D1[2], label='Authentic')
 
     plt.savefig(f"images\\PCA_scatter_{m}.png")
+    plt.close()
 
     if m == 2:
         plt.figure()
@@ -225,6 +257,107 @@ def logpdf_GAU_ND(X, mu, C):
     # logN is an array of length N (# of samples)
     # each element represents the log-density of each sample
     return logN
+
+def z_score(D):
+    mu = D.mean(1) # mu will be a row vector so we have to convert it into a column vector
+    Dc = D - vcol(mu) # centered dataset D - the column representation of mu
+    C = (1/D.shape[1])*np.dot(Dc, Dc.T) # C is the covariance matrix
+    diag = np.reshape(np.diag(C), (D.shape[0], 1))
+    diag = np.sqrt(diag)
+
+    Dc = Dc/diag
+
+    return Dc
+
+def logreg_obj_weight_wrap(DTR, LTR, l, pt):
+    def logreg_derivative_b(v):
+        w, b = np.array(v[0:-1]), v[-1]
+
+        result = 0
+        for i in range(0, DTR.shape[1]):
+            z = 2 * LTR[i] -1
+            exp = np.exp((-z) * (np.dot(w.T, DTR.T[i]) + b))
+            result += (exp * (-z) / (1 + exp))
+        return result / DTR.shape[1]
+
+    def logreg_derivative_w(v):
+        w, b = np.array(v[0:-1]), v[-1]
+
+        result = 0
+        for i in range(0, DTR.shape[1]):
+            z = 2 * LTR[i] -1
+            exp = np.exp((-z) * (np.dot(w.T, DTR.T[i]) + b))
+            result += (exp * (-z * DTR.T[i]) / (1 + exp))
+        return result / DTR.shape[1] + l * w
+
+    def logreg_obj(v):
+        w, b = v[0:-1], v[-1]
+        J = 0
+
+        for i in range(0, DTR.shape[1]):
+            zi = 2*LTR[i] - 1
+            if zi > 0:
+                J += (pt/LTR.sum())*np.logaddexp(0, -zi*(np.dot(w, DTR[:, i]) + b))
+            else:
+                J += ((1 - pt)/(LTR.shape[0] - LTR.sum()))*np.logaddexp(0, -zi*(np.dot(w, DTR[:, i]) + b))
+
+        J += l/2*np.linalg.norm(w)**2
+
+        return (J, np.concatenate([logreg_derivative_w(v), [logreg_derivative_b(v)]]))
+
+    return logreg_obj
+
+def logreg_obj_wrap(DTR, LTR, l):
+    def logreg_derivative_b(v):
+        w, b = np.array(v[0:-1]), v[-1]
+
+        result = 0
+        for i in range(0, DTR.shape[1]):
+            z = 2 * LTR[i] -1
+            exp = np.exp((-z) * (np.dot(w.T, DTR.T[i]) + b))
+            result += (exp * (-z) / (1 + exp))
+        return result / DTR.shape[1]
+
+    def logreg_derivative_w(v):
+        w, b = np.array(v[0:-1]), v[-1]
+
+        result = 0
+        for i in range(0, DTR.shape[1]):
+            z = 2 * LTR[i] -1
+            exp = np.exp((-z) * (np.dot(w.T, DTR.T[i]) + b))
+            result += (exp * (-z * DTR.T[i]) / (1 + exp))
+        return result / DTR.shape[1] + l * w
+
+    def logreg_obj(v):
+        w, b = v[0:-1], v[-1]
+        J = 0
+
+        for i in range(0, DTR.shape[1]):
+            zi = 2*LTR[i] - 1
+            J += np.logaddexp(0, -zi*(np.dot(w, DTR[:, i]) + b))
+
+        J /= DTR.shape[1]
+        J += l/2*np.linalg.norm(w)**2
+
+        return (J, np.concatenate([logreg_derivative_w(v), [logreg_derivative_b(v)]]))
+
+    return logreg_obj
+
+def expand_feature_space(D):
+    newD = np.ndarray((D.shape[0]**2 + D.shape[0], 1))
+    for i in range(0, D.shape[1]):
+        x = D[:, i]
+        x = x.reshape((D.shape[0], 1))
+        
+        XXT = np.dot(x, x.T)
+        phy = np.matrix.flatten(XXT)
+        
+        phy = np.concatenate([phy, np.matrix.flatten(x)])
+        # this is now our x. We now need to put all out xs together
+        newD = np.concatenate([newD, phy.reshape(D.shape[0]**2 + D.shape[0], 1)], axis=1)
+    
+    newD = newD[:, 1:]
+    return newD
 
 def opt_bayes(prior, Cfn, Cfp, s_log_ratio):
 

@@ -1,13 +1,18 @@
 from mllib import *
 
 if __name__ == '__main__':
-    (DTR, LTR) = load('Train.txt')
+    (D, L) = load('Train.txt')
 
     # Showing for each feature the distribution of this with respect to the two different classes
-    for i in range(DTR.shape[0]):
-        feature_plot_binary(i, DTR, LTR, ['spoofed', 'authentic'])
+    for i in range(D.shape[0]):
+        feature_plot_binary(i, D, L, ['spoofed', 'authentic'])
 
-    PCA_plot(DTR, LTR)
-    LDA_plot(DTR, LTR)
+    # for i in range(D.shape[0]):
+    #     for j in range(D.shape[0]):
+    #         if i != j:
+    #             feature_scatter_binary(i, j, D, L, ['spoofed', 'authentic'])
 
-    heatmaps_binary(DTR, LTR)
+    PCA_plot(D, L)
+    LDA_plot(D, L)
+
+    heatmaps_binary(D, L)

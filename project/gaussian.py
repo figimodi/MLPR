@@ -1,4 +1,4 @@
-from mllibrary import *
+from mllib import *
 
 if __name__ == '__main__':
     D, L = load('Train.txt')
@@ -14,17 +14,23 @@ if __name__ == '__main__':
     # DLDA2 = LDA(D, L, 2) # call LDA with m=2
     # DLDA3 = LDA(D, L, 3) # call LDA with m=3
 
+    DPCA9 = PCA(D, L, 9)
+    DPCA8 = PCA(D, L, 8)
+    DPCA7 = PCA(D, L, 7)
+    DPCA6 = PCA(D, L, 6)
+
     # (DTR, LTR), (DTE, LTE) = split_db_2to1(D, L) # without PCA or/and LDA
     # (DTR, LTR), (DTE, LTE) = split_db_2to1(DPCA2, L) # without PCA or/and LDA
     # (DTR, LTR), (DTE, LTE) = split_db_2to1(DPCA3, L) # without PCA or/and LDA
     # (DTR, LTR), (DTE, LTE) = split_db_2to1(DLDA2, L) # without PCA or/and LDA
     # (DTR, LTR), (DTE, LTE) = split_db_2to1(DLDA3, L) # without PCA or/and LDA 
-    
+
     logRatioCumulative = np.array([])
     cumulativeLabels = np.array([])
 
     for i in range(0, K):
-        (DTR, LTR), (DTE, LTE) = k_fold(D, L, K, i)
+        # (DTR, LTR), (DTE, LTE) = k_fold(D, L, K, i)
+        (DTR, LTR), (DTE, LTE) = k_fold(DPCA9, L, K, i)
 
         # MVG
         # compute mean and covariance for all classes
@@ -37,7 +43,7 @@ if __name__ == '__main__':
         # (mu1, C1) = compute_mu_C(DTR, LTR, 1, True)
 
         # Tied-Covariance
-        # C0 = C1 = 1/DTR.shape[1]*(C0*(LTR == 0).sum() + C1*(LTR == 1).sum())
+        C0 = C1 = 1/DTR.shape[1]*(C0*(LTR == 0).sum() + C1*(LTR == 1).sum())
 
         # compute score matrix S of shape [2, x], which is the number of classes times the number of samples in the test set
         S0 = logpdf_GAU_ND(DTE, mu0, C0)
@@ -54,7 +60,7 @@ if __name__ == '__main__':
         # SMarginal = vrow(SJoint.sum(0))
         # SPost = SJoint/SMarginal
 
-        p = 0.09
+        p = 1/11
         logP = np.log(p/(1-p))
 
         # working with logs
