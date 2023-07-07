@@ -8,8 +8,11 @@ if __name__ == '__main__':
     DPCA7 = PCA(D, L, 7)
     # DPCA6 = PCA(D, L, 6)
 
-    zScoreD = z_score(DPCA7)
-    expD = expand_feature_space(zScoreD)
+    Dc = centering(DPCA7)
+    Ds = std_variances(Dc)
+    # Dw = whitening(Ds, DPCA7)
+    # Dl = l2(Dw)
+    expD = expand_feature_space(Ds)
 
     # folds
     K = 10
@@ -19,11 +22,8 @@ if __name__ == '__main__':
 
     # threshold
     p = 1/11
-    t = -np.log(p/(1-p))
 
     for li in l:
-         # accuracy
-        acc = 0
         logRatioCumulative = np.array([])
         cumulativeLabels = np.array([])
 
@@ -37,24 +37,11 @@ if __name__ == '__main__':
             w, b = x[0:-1], x[-1]
             S = np.dot(w, DTE) + b
 
-            empp = LTR.sum()/LTR.shape[0]
-            logempp = np.log(empp/(1 - empp))
-
-            PL = S > t
-
             logRatioCumulative = np.append(logRatioCumulative, S)
             cumulativeLabels = np.append(cumulativeLabels, LTE)
 
-            acc += (PL == LTE).sum()
-
-        acc /= len(L)
-        err = 1 - acc
-
-        dcf = normalized_bayes_risk(p, 1, 1, logRatioCumulative, cumulativeLabels)
         mindcf = DCF_min(p, 1, 1, logRatioCumulative, cumulativeLabels)
 
         print(f"using lambda={li}")
-        print(f"accuray: {acc}")
         print(f"min dcf: {mindcf}")
-        print(f"actual dcf: {dcf}") 
         print("___________________________________")

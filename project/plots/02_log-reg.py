@@ -15,8 +15,12 @@ if __name__ == '__main__':
 
     quad_nopca_z = [0.29272540983606554, 0.2924180327868852, 0.2886885245901639, 0.2805327868852459, 0.28897540983606557, 0.32739754098360657, 0.3905122950819672]
     quad_pca7_z = [0.2643032786885246, 0.2643032786885246, 0.2593032786885246, 0.2636680327868853, 0.30645491803278685, 0.3402254098360656, 0.4333196721311475]
+    quad_pca7_zw = [0.26680327868852455, 0.26680327868852455, 0.2643032786885246, 0.2643032786885246, 0.26836065573770496, 0.29489754098360654, 0.4252254098360656]
+    quad_pca7_zwl = [0.2708606557377049, 0.2586680327868852, 0.25366803278688527, 0.31741803278688524, 0.4158811475409836, 0.5014344262295082, 0.921844262295082]
+    quad_pca7_cwl = [0.2695901639344262, 0.26147540983606554, 0.2768032786885246, 0.34239754098360653, 0.45932377049180323, 0.5286065573770492, 0.9109016393442623]
 
     quad_pca7_z_weight = [0.2580532786885246, 0.2555532786885246, 0.2618032786885246, 0.2611680327868853, 0.3052049180327869, 0.3515163934426229, 0.4034016393442623]
+    quad_pca7_zwl_weight = [0.2639754098360656, 0.2593032786885246, 0.2571106557377049, 0.3161680327868852, 0.4305532786885246, 0.40241803278688526, 0.44643442622950813]
 
     plt.figure()
     plt.plot(x, lin_nopca, label='Log-Reg')
@@ -28,7 +32,7 @@ if __name__ == '__main__':
     plt.ylabel('minDCF')
     plt.legend()
     plt.grid()
-    plt.savefig('log_reg\\linear_logreg.png')
+    plt.savefig('log-reg\\linear_logreg.png')
     plt.close
 
     plt.figure()
@@ -39,7 +43,7 @@ if __name__ == '__main__':
     plt.ylabel('minDCF')
     plt.legend()
     plt.grid()
-    plt.savefig('log_reg\\quad.png')
+    plt.savefig('log-reg\\quad.png')
     plt.close()
 
     plt.figure()
@@ -53,17 +57,35 @@ if __name__ == '__main__':
     plt.ylabel('minDCF')
     plt.legend()
     plt.grid()
-    plt.savefig('log_reg\\quad_diffPCA.png')
+    plt.savefig('log-reg\\quad_diffPCA.png')
     plt.close()
 
     plt.figure()
-    plt.plot(x, quad_pca7, label='Q-Log-Reg (PCA=7)')
-    plt.plot(x, quad_pca7_z, label='Q-Log-Reg (PCA=7. z-norm)')
-    plt.plot(x, quad_pca7_z_weight, label='Q-Log-Reg (PCA=7. z-norm, pre-weighted)')
+    plt.plot(x, quad_pca7, label='Q-Log-Reg', linewidth=3)
+    plt.plot(x, quad_pca7_z, label='Q-Log-Reg (z-norm)')
+    plt.plot(x, quad_pca7_zw, label='Q-Log-Reg (z-norm, whitening)')
+    plt.plot(x, quad_pca7_zwl, label='Q-Log-Reg (z-norm, whitening, l2-norm)')
+    plt.plot(x, quad_pca7_cwl, label='Q-Log-Reg (centering, whitnening, l2-norm)')
+    plt.ylim(0.2, 0.6)
     plt.xscale('log')
     plt.xlabel('λ')
     plt.ylabel('minDCF')
     plt.legend()
     plt.grid()
-    plt.savefig('log_reg\\quad_best.png')
+    plt.savefig('log-reg\\quad_preproc.png')
     plt.close()
+
+    plt.figure()
+    plt.plot(x, quad_pca7_z, label='Q-Log-Reg (z-norm)')
+    plt.plot(x, quad_pca7_zwl, label='Q-Log-Reg (z-norm, whitening, l2-norm)')
+    plt.plot(x, quad_pca7_z_weight, label='Q-Log-Reg (z-norm) prior weighted', linestyle='--')
+    plt.plot(x, quad_pca7_zwl_weight, label='Q-Log-Reg (z-norm, whitnening, l2-norm) prior weighted', linestyle='--')
+    plt.ylim(0.2, 0.6)
+    plt.xscale('log')
+    plt.xlabel('λ')
+    plt.ylabel('minDCF')
+    plt.legend()
+    plt.grid()
+    plt.savefig('log-reg\\quad_priorweight.png')
+    plt.close()
+
