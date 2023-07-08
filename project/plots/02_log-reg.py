@@ -23,7 +23,7 @@ if __name__ == '__main__':
     quad_pca7_zwl_weight = [0.2639754098360656, 0.2593032786885246, 0.2571106557377049, 0.3161680327868852, 0.4305532786885246, 0.40241803278688526, 0.44643442622950813]
 
     plt.figure()
-    plt.plot(x, lin_nopca, label='Log-Reg')
+    plt.plot(x, lin_nopca, label='Log-Reg (No PCA)')
     plt.plot(x, lin_nopca_z, label='Log-Reg (z-norm)')
     plt.plot(x, lin_pca7, label='Log-Reg (PCA=7)', linestyle='--', linewidth=2)
     plt.plot(x, lin_pca7_z, label='Log-Reg (PCA=7, z-norm)', linestyle='--', linewidth=2)
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     plt.close
 
     plt.figure()
-    plt.plot(x, quad_nopca, label='Q-Log-Reg')
+    plt.plot(x, quad_nopca, label='Q-Log-Reg (No PCA)')
     plt.plot(x, quad_nopca_z, label='Q-Log-Reg (z-norm)')
     plt.xscale('log')
     plt.xlabel('λ')
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     plt.close()
 
     plt.figure()
-    plt.plot(x, quad_nopca, label='Q-Log-Reg')
+    plt.plot(x, quad_nopca, label='Q-Log-Reg (No PCA)')
     plt.plot(x, quad_pca9, label='Q-Log-Reg (PCA=9)')
     plt.plot(x, quad_pca8, label='Q-Log-Reg (PCA=8)')
     plt.plot(x, quad_pca7, label='Q-Log-Reg (PCA=7)')

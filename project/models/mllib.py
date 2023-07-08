@@ -488,21 +488,12 @@ def compute_svm(DTR, LTR, DTE, K, C):
     # we now need to compute the scores and check the predicted lables with threshold
     DTEE = np.vstack([DTE, np.ones((1, DTE.shape[1])) * K])
     return np.dot(w.T, DTEE)
-
-def poly_kernel(x1, x2, c, d, e):
-    return np.power((np.dot(x1.T, x2) + c), d) + e
     
 def compute_svm_polykernel(DTR, LTR, DTE, K, C, d, c):
     Z = LTR * 2 - 1
     DTRE = np.vstack([DTR, np.ones((1, DTR.shape[1])) * K])
     
     Z = np.reshape(Z, (LTR.shape[0], 1))
-    # H = np.dot(Z, Z.T)
-
-    # will compute H in with for loops
-    # for i in range(0, DTR.shape[1]):
-    #     for j in range(0, DTR.shape[1]):
-    #         H[i][j] *= poly_kernel(DTRE.T[i], DTRE.T[j], c, d, K**2)
 
     Kprime = np.dot(DTRE.T, DTRE)
     Zprime = np.dot(Z, Z.T)
@@ -522,10 +513,31 @@ def compute_svm_polykernel(DTR, LTR, DTE, K, C, d, c):
     Kmat = ((Kprime + c) ** d) + K**2
     S = np.multiply(az, Kmat).sum(axis=0)
     
-    # for t in range(0, DTE.shape[1]):
-    #     result = 0
-    #     for i in range(0, DTR.shape[1]):
-    #         result += alpha[i]*Z[i]*poly_kernel(DTRE.T[i], DTEE.T[t], c, d, K**2)
-    #     S[t] = result
+    return S
+
+def compute_svm_RBF(DTR, LTR, DTE, K, C, g):
+    Z = LTR * 2 - 1
+    DTRE = np.vstack([DTR, np.ones((1, DTR.shape[1])) * K])
+    
+    Z = np.reshape(Z, (LTR.shape[0], 1))
+    H = np.dot(Z, Z.T)
+
+    # will compute H in with for loops
+    for i in range(0, DTR.shape[1]):
+        for j in range(0, DTR.shape[1]):
+            H[i][j] *= (np.exp(-g*(np.linalg.norm(DTRE.T[i] - DTRE.T[j]))**2) + K**2)
+
+    BC = [(0, C) for i in range(0, DTR.shape[1])]
+    [alpha, f, d2] = sp.optimize.fmin_l_bfgs_b(svm_wraper(H, DTR), np.zeros((DTR.shape[1],1)), bounds=BC, factr=1.0)
+    
+    DTEE = np.vstack([DTE, np.ones((1, DTE.shape[1])) * K])
+
+    S = np.ones((DTE.shape[1]))
+    
+    for t in range(0, DTE.shape[1]):
+        result = 0
+        for i in range(0, DTR.shape[1]):
+            result += alpha[i]*Z[i]*(np.exp(-g*(np.linalg.norm(DTRE.T[i] - DTRE.T[j]))**2) + K**2)
+        S[t] = result
     
     return S
