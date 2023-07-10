@@ -14,7 +14,7 @@ if __name__ == '__main__':
     Dl = l2(Dw)
 
     # C values
-    C = [1, 10, 100]
+    C = [1e-1, 1, 10, 100]
 
     # folds
     K = 10
@@ -22,32 +22,31 @@ if __name__ == '__main__':
     # parameters of svm
     KSVM = 1
     degree = 2
-    c_poly = 0
+    c_poly = 1
     G = [1e-5, 1e-4, 1e-3]
  
     # effective prior
     p = 1/11
 
-    for gi in G:
-        for ci in C:
-            logRatioCumulative = np.array([])
-            cumulativeLabels = np.array([])
+    for ci in C:
+        logRatioCumulative = np.array([])
+        cumulativeLabels = np.array([])
 
-            for i in range(0, K):
-                (DTR, LTR), (DTE, LTE) = k_fold(Dl, L, K, i)
+        for i in range(0, K):
+            (DTR, LTR), (DTE, LTE) = k_fold(Dl, L, K, i)
 
-                # S = compute_svm(DTR, LTR, DTE, KSVM, ci)
-                # S = compute_svm_polykernel(DTR, LTR, DTE, KSVM, ci, degree, c_poly)
-                S = compute_svm_RBF(DTR, LTR, DTE, KSVM, ci, gi)
+            # S = compute_svm(DTR, LTR, DTE, KSVM, ci)
+            S = compute_svm_polykernel_weighted(DTR, LTR, DTE, KSVM, ci, degree, c_poly, p)
+            # S = compute_svm_RBF(DTR, LTR, DTE, KSVM, ci, gi)
 
-                logRatioCumulative = np.append(logRatioCumulative, S)
-                cumulativeLabels = np.append(cumulativeLabels, LTE)
+            logRatioCumulative = np.append(logRatioCumulative, S)
+            cumulativeLabels = np.append(cumulativeLabels, LTE)
 
-            mindcf = DCF_min(p, 1, 1, logRatioCumulative, cumulativeLabels)
+        mindcf = DCF_min(p, 1, 1, logRatioCumulative, cumulativeLabels)
 
-            print(f"using G={gi}, C={ci}")
-            print(f"min dcf: {mindcf}")
-            print("___________________________________")
+        print(f"using C={ci}")
+        print(f"min dcf: {mindcf}")
+        print("___________________________________")
  
 
     

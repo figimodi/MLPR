@@ -92,6 +92,10 @@ centering + withening + l2:
     min dcf: 0.916844262295082
     ___________________________________
 
+
+____________________________________________
+FOR THE BEST CONFIGURATION:
+
 z-score (weighted version pt=1/11):
     using lambda=1e-05
     min dcf: 0.26961065573770493

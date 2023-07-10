@@ -527,6 +527,39 @@ def compute_svm_polykernel(DTR, LTR, DTE, K, C, d, c):
     
     return S
 
+def compute_svm_polykernel_weighted(DTR, LTR, DTE, K, C, d, c, pt):
+    Z = LTR * 2 - 1
+    Z = np.reshape(Z, (LTR.shape[0], 1))
+
+    Kprime = np.dot(DTR.T, DTR)
+    Zprime = np.dot(Z, Z.T)
+    Kmat = ((Kprime + c) ** d) + K**2
+    H = np.multiply(Zprime, Kmat)
+
+    # coputing Ci
+    pemp = LTR.sum()/LTR.shape[0]
+    Ct = C*pt/pemp
+    Cf = C*(1 - pt)/(1-pemp)
+
+    BC = []
+    for i in range(DTR.shape[1]):
+        if LTR[i] == 1:
+            BC.append((0, Ct))
+        else:
+            BC.append((0, Cf))
+
+    [alpha, f, d2] = sp.optimize.fmin_l_bfgs_b(svm_wraper(H, DTR), np.zeros((DTR.shape[1],1)), bounds=BC, factr=1.0)
+    
+    S = np.ones((DTE.shape[1]))
+
+    alpha = np.reshape(alpha, (alpha.shape[0], 1))
+    az = np.multiply(alpha, Z)
+    Kprime = np.dot(DTR.T, DTE)
+    Kmat = ((Kprime + c) ** d) + K**2
+    S = np.multiply(az, Kmat).sum(axis=0)
+    
+    return S
+
 def compute_svm_RBF(DTR, LTR, DTE, K, C, g):
     Z = LTR * 2 - 1
     
@@ -539,6 +572,41 @@ def compute_svm_RBF(DTR, LTR, DTE, K, C, g):
             H[i][j] *= (np.exp(-g*(np.linalg.norm(DTR.T[i] - DTR.T[j]))**2) + K**2)
             
     BC = [(0, C) for i in range(0, DTR.shape[1])]
+    [alpha, f, d2] = sp.optimize.fmin_l_bfgs_b(svm_wraper(H, DTR), np.zeros((DTR.shape[1],1)), bounds=BC, factr=1.0)
+    
+    S = np.ones((DTE.shape[1]))
+
+    for t in range(0, DTE.shape[1]):
+        result = 0
+        for i in range(0, DTR.shape[1]):
+            result += alpha[i]*Z[i]*(np.exp(-g*(np.linalg.norm(DTR.T[i] - DTE.T[t]))**2) + K**2)
+        S[t] = result
+        
+    return S
+
+def compute_svm_RBF_weighted(DTR, LTR, DTE, K, C, g, pt):
+    Z = LTR * 2 - 1
+    
+    Z = np.reshape(Z, (LTR.shape[0], 1))
+    H = np.dot(Z, Z.T)
+
+    # will compute H in with for loops
+    for i in range(0, DTR.shape[1]):
+        for j in range(0, DTR.shape[1]):
+            H[i][j] *= (np.exp(-g*(np.linalg.norm(DTR.T[i] - DTR.T[j]))**2) + K**2)
+            
+    # coputing Ci
+    pemp = LTR.sum()/LTR.shape[0]
+    Ct = C*pt/pemp
+    Cf = C*(1 - pt)/(1-pemp)
+
+    BC = []
+    for i in range(DTR.shape[1]):
+        if LTR[i] == 1:
+            BC.append((0, Ct))
+        else:
+            BC.append((0, Cf))
+            
     [alpha, f, d2] = sp.optimize.fmin_l_bfgs_b(svm_wraper(H, DTR), np.zeros((DTR.shape[1],1)), bounds=BC, factr=1.0)
     
     S = np.ones((DTE.shape[1]))
