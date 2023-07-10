@@ -46,7 +46,7 @@ def feature_plot_binary(feature, D, L, classes):
         mask = (L == classIndex)
         data = vetAttr[mask]
         plt.hist(data, bins = 50, density=True, alpha=0.3, label=f"{className}")
-    plt.savefig(f"features\\feature{feature}.png")
+    plt.savefig(f"01_features_analysis_pt1\\feature{feature}.png")
 
     return
 
@@ -60,7 +60,7 @@ def feature_scatter_binary(f1, f2, D, L, classes):
         D0 = vetAttr1[mask]
         D1 = vetAttr2[mask]
         plt.scatter(D0, D1)
-    plt.savefig(f"features\\ftr_{f1}_{f2}.png")
+    plt.savefig(f"01_features_analysis_pt1\\ftr_{f1}_{f2}.png")
     plt.close()
 
 def PCA(D, L, m):
@@ -113,18 +113,18 @@ def PCA_plot(D, L, m=2):
         ax.scatter(D0[0], D0[1], D0[2], label='Spoofed')
         ax.scatter(D1[0], D1[1], D1[2], label='Authentic')
 
-    plt.savefig(f"images\\PCA_scatter_{m}.png")
+    plt.savefig(f"01_features_analysis_pt2\\PCA_scatter_{m}.png")
     plt.close()
 
     if m == 2:
         plt.figure()
         plt.hist(D0[0], bins = 50, density=True, alpha=0.3, label="Spoofed")
         plt.hist(D1[0], bins = 50, density=True, alpha=0.3, label="Authentic")
-        plt.savefig(f"images\\PCA_hist_0.png")
+        plt.savefig(f"01_features_analysis_pt2\\PCA_hist_0.png")
         plt.figure()
         plt.hist(D0[1], bins = 50, density=True, alpha=0.3, label="Spoofed")
         plt.hist(D1[1], bins = 50, density=True, alpha=0.3, label="Authentic")
-        plt.savefig(f"images\\PCA_hist_1.png")
+        plt.savefig(f"01_features_analysis_pt2\\PCA_hist_1.png")
 
     return Dp
 
@@ -182,19 +182,79 @@ def LDA_plot(D, L, m=2):
         ax.scatter(D0[0], D0[1], D0[2], label='Spoofed')
         ax.scatter(D1[0], D1[1], D1[2], label='Authentic')
 
-    plt.savefig(f"images\\LDA_scatter_{m}.png")
+    plt.savefig(f"01_features_analysis_pt2\\LDA_scatter_{m}.png")
 
     if m == 2:
         plt.figure()
         plt.hist(D0[0], bins = 50, density=True, alpha=0.3, label="Spoofed")
         plt.hist(D1[0], bins = 50, density=True, alpha=0.3, label="Authentic")
-        plt.savefig(f"images\\LDA_hist_0.png")
+        plt.savefig(f"01_features_analysis_pt2\\LDA_hist_0.png")
         plt.figure()
         plt.hist(D0[1], bins = 50, density=True, alpha=0.3, label="Spoofed")
         plt.hist(D1[1], bins = 50, density=True, alpha=0.3, label="Authentic")
-        plt.savefig(f"images\\LDA_hist_1.png")
+        plt.savefig(f"01_features_analysis_pt2\\LDA_hist_1.png")
 
     return Dp
+
+def PCA_data_variance(D):
+    mu = D.mean(1) # mu will be a row vector so we have to convert it into a column vector
+    Dc = D - vcol(mu) # centered dataset D - the column representation of mu
+    C = (1/D.shape[1])*np.dot(Dc, Dc.T) # C is the covariance matrix
+
+    # find eigenvalues and eigenvectors with the function numpy.linalg.eigh
+    s, U = np.linalg.eigh(C) # eigh returns the eigenvalues and the eignevectors sorted from smallest to larger
+
+    s = np.sort(s)[::-1]
+    y = []
+
+    for i in range(len(s)):
+        n = s[0:i].sum()
+        d = s.sum()
+        y = np.append(y, n/d)
+
+    x = np.linspace(0, 10, 10, endpoint=True)
+    
+    plt.figure()
+    plt.plot(x, y)
+    plt.grid()
+    plt.xlabel('PCA dimensions')
+    plt.ylabel('Fraction of explained variance')
+    plt.savefig('01_features_analysis_pt2\\explained_variance.png')
+    plt.close()
+
+    return
+
+def centering(D):
+    mu = D.mean(1)
+    return D - vcol(mu)
+
+def std_variances(D):
+    mu = D.mean(1) 
+    Dc = D - vcol(mu) 
+    C = (1/D.shape[1])*np.dot(Dc, Dc.T)
+    
+    diag = np.reshape(np.diag(C), (D.shape[0], 1))
+    diag = np.sqrt(diag)
+
+    D = D/diag
+
+    return D
+
+def whitening(Dx, D):
+    mu = D.mean(1) 
+    Dc = D - vcol(mu) 
+    C = (1/D.shape[1])*np.dot(Dc, Dc.T)
+
+    sqrtC = sp.linalg.fractional_matrix_power(C, 0.5)
+    Dw = np.dot(sqrtC, Dx)
+    
+    return Dw
+
+def l2(D): 
+    for i in range(D.shape[1]):
+        D[:, i] = D[:, i]/np.linalg.norm(D[:, i])
+
+    return D
 
 def heatmaps_binary(D, L):
     DT = D.T
@@ -205,19 +265,19 @@ def heatmaps_binary(D, L):
     corr = df.corr()
     plt.figure()
     sb.heatmap(corr, cmap="Blues")
-    plt.savefig("images\\heatmap.png")
+    plt.savefig("01_features_analysis_pt2\\heatmap.png")
     
     df = pd.DataFrame(D_auth)
     corr = df.corr()
     plt.figure()
     sb.heatmap(corr, cmap="Blues")
-    plt.savefig("images\\heatmap_auth.png")
+    plt.savefig("01_features_analysis_pt2\\heatmap_auth.png")
     
     df = pd.DataFrame(D_spoofed)
     corr = df.corr()
     plt.figure()
     sb.heatmap(corr, cmap="Blues")
-    plt.savefig("images\\heatmap_spoofed.png")
+    plt.savefig("01_features_analysis_pt2\\heatmap_spoofed.png")
 
 def compute_mu_C(D, L, label, NB=False):
     DL = D[:, L == label]
@@ -257,44 +317,6 @@ def logpdf_GAU_ND(X, mu, C):
     # logN is an array of length N (# of samples)
     # each element represents the log-density of each sample
     return logN
-
-def centering(D):
-    mu = D.mean(1)
-    return D - vcol(mu)
-
-def std_variances(D):
-    C = (1/D.shape[1])*np.dot(D, D.T) # C is the covariance matrix
-    diag = np.reshape(np.diag(C), (D.shape[0], 1))
-    diag = np.sqrt(diag)
-
-    D = D/diag
-
-    return D
-
-def whitening(Dx, D):
-    C = (1/D.shape[1])*np.dot(D, D.T)
-    
-    sqrtC = sp.linalg.fractional_matrix_power(C, 0.5)
-    Dw = np.dot(sqrtC, Dx)
-    
-    return Dw
-
-def l2(D): 
-    for i in range(D.shape[1]):
-        D[:, i] = D[:, i]/np.linalg.norm(D[:, i])
-
-    return D
-
-def z_score(D):
-    mu = D.mean(1) # mu will be a row vector so we have to convert it into a column vector
-    Dc = D - vcol(mu) # centered dataset D - the column representation of mu
-    C = (1/D.shape[1])*np.dot(Dc, Dc.T) # C is the covariance matrix
-    diag = np.reshape(np.diag(C), (D.shape[0], 1))
-    diag = np.sqrt(diag)
-
-    Dc = Dc/diag
-
-    return Dc
 
 def logreg_obj_weight_wrap(DTR, LTR, l, pt):
     def logreg_derivative_b(v):
@@ -386,16 +408,10 @@ def expand_feature_space(D):
     newD = newD[:, 1:]
     return newD
 
-def opt_bayes(prior, Cfn, Cfp, s_log_ratio):
+def DCF_actual(prior, Cfn, Cfp, s_log_ratio, labels):
 
     t = -np.log((prior * Cfn)/((1 - prior) * Cfp))
     c = s_log_ratio > t
-    
-    return c
-
-def normalized_bayes_risk(prior, Cfn, Cfp, s_log_ratio, labels):
-
-    c = opt_bayes(prior, Cfn, Cfp, s_log_ratio)
 
     CMD = np.zeros((2, 2), dtype=int)
 
@@ -441,7 +457,7 @@ def bayer_error_plots(prior, Cfn, Cfp, s_log_ratio, labels):
 
     for i, p in enumerate(effective_prior):
         print(f"compute for point {i}")
-        dcf = np.append(dcf, normalized_bayes_risk(p, 1, 1, s_log_ratio, labels))
+        dcf = np.append(dcf, DCF_actual(p, 1, 1, s_log_ratio, labels))
         mindcf = np.append(mindcf, DCF_min(p, 1, 1, s_log_ratio, labels))
 
     np.save("bayes_errors_dcf", dcf)
@@ -491,11 +507,9 @@ def compute_svm(DTR, LTR, DTE, K, C):
     
 def compute_svm_polykernel(DTR, LTR, DTE, K, C, d, c):
     Z = LTR * 2 - 1
-    DTRE = np.vstack([DTR, np.ones((1, DTR.shape[1])) * K])
-    
     Z = np.reshape(Z, (LTR.shape[0], 1))
 
-    Kprime = np.dot(DTRE.T, DTRE)
+    Kprime = np.dot(DTR.T, DTR)
     Zprime = np.dot(Z, Z.T)
     Kmat = ((Kprime + c) ** d) + K**2
     H = np.multiply(Zprime, Kmat)
@@ -503,13 +517,11 @@ def compute_svm_polykernel(DTR, LTR, DTE, K, C, d, c):
     BC = [(0, C) for i in range(0, DTR.shape[1])]
     [alpha, f, d2] = sp.optimize.fmin_l_bfgs_b(svm_wraper(H, DTR), np.zeros((DTR.shape[1],1)), bounds=BC, factr=1.0)
     
-    DTEE = np.vstack([DTE, np.ones((1, DTE.shape[1])) * K])
-
     S = np.ones((DTE.shape[1]))
 
     alpha = np.reshape(alpha, (alpha.shape[0], 1))
     az = np.multiply(alpha, Z)
-    Kprime = np.dot(DTRE.T, DTEE)
+    Kprime = np.dot(DTR.T, DTE)
     Kmat = ((Kprime + c) ** d) + K**2
     S = np.multiply(az, Kmat).sum(axis=0)
     
@@ -517,7 +529,6 @@ def compute_svm_polykernel(DTR, LTR, DTE, K, C, d, c):
 
 def compute_svm_RBF(DTR, LTR, DTE, K, C, g):
     Z = LTR * 2 - 1
-    DTRE = np.vstack([DTR, np.ones((1, DTR.shape[1])) * K])
     
     Z = np.reshape(Z, (LTR.shape[0], 1))
     H = np.dot(Z, Z.T)
@@ -525,19 +536,150 @@ def compute_svm_RBF(DTR, LTR, DTE, K, C, g):
     # will compute H in with for loops
     for i in range(0, DTR.shape[1]):
         for j in range(0, DTR.shape[1]):
-            H[i][j] *= (np.exp(-g*(np.linalg.norm(DTRE.T[i] - DTRE.T[j]))**2) + K**2)
-
+            H[i][j] *= (np.exp(-g*(np.linalg.norm(DTR.T[i] - DTR.T[j]))**2) + K**2)
+            
     BC = [(0, C) for i in range(0, DTR.shape[1])]
     [alpha, f, d2] = sp.optimize.fmin_l_bfgs_b(svm_wraper(H, DTR), np.zeros((DTR.shape[1],1)), bounds=BC, factr=1.0)
     
-    DTEE = np.vstack([DTE, np.ones((1, DTE.shape[1])) * K])
-
     S = np.ones((DTE.shape[1]))
-    
+
     for t in range(0, DTE.shape[1]):
         result = 0
         for i in range(0, DTR.shape[1]):
-            result += alpha[i]*Z[i]*(np.exp(-g*(np.linalg.norm(DTRE.T[i] - DTRE.T[j]))**2) + K**2)
+            result += alpha[i]*Z[i]*(np.exp(-g*(np.linalg.norm(DTR.T[i] - DTE.T[t]))**2) + K**2)
         S[t] = result
-    
+        
     return S
+
+def logpdf_GMM(X, gmm):
+
+    S = np.empty(shape=(1, X.shape[1]))
+
+    for g in range(len(gmm)):
+        Sg = logpdf_GAU_ND(X, gmm[g][1], gmm[g][2])
+        Sg += np.log(gmm[g][0])
+        S = np.vstack([S, Sg])
+
+    S = S[1:, :]
+
+    logdens = sp.special.logsumexp(S, axis=0)
+
+    return logdens
+
+def E_step(X, gmm):
+    S = np.empty(shape=(1, X.shape[1]))
+
+    for g in range(len(gmm)):
+        Sg = logpdf_GAU_ND(X, gmm[g][1], gmm[g][2])
+        Sg += np.log(gmm[g][0])
+        S = np.vstack([S, Sg])
+
+    S = S[1:, :]
+
+    marginals = sp.special.logsumexp(S, axis=0)
+    posteriors = S - marginals
+
+    resps = np.exp(posteriors)
+    ll = marginals.sum()/X.shape[1]
+
+    return resps, ll
+
+def M_step(X, resps, psi=0, diag=False, tied=False):
+    triplets = []
+    gmm = []
+    Zsum = 0
+    Csum = np.zeros(shape=(X.shape[0], X.shape[0]))
+    for g in range(resps.shape[0]):
+       Zg, Fg, Sg = M_step_g(X, resps[g, :])
+       triplets.append((Zg, Fg, Sg))
+       Zsum += Zg
+
+    for g in range(resps.shape[0]):
+        (Zg, Fg, Sg) = triplets[g]
+        mu = vcol(Fg/Zg)
+        C = (Sg/Zg) - np.dot(mu, mu.T)
+        w = Zg/Zsum
+        Csum += (Zg*C)
+
+        gmm.append((w, mu, C))
+
+    for g in range(resps.shape[0]):
+        (w, mu, C) = gmm[g]
+        
+        if tied == True:
+            C = (1/X.shape[1])*Csum
+
+        if diag == True:
+            C = np.eye(C.shape[0])
+        
+        U, s, _ = np.linalg.svd(C)
+        s[s < psi] = psi
+        C = np.dot(U, vcol(s)*U.T)
+
+        gmm[g] = (w, mu, C)
+
+    return gmm
+
+def M_step_g(X, resp):
+    Zg = resp.sum()
+    Fg = np.multiply(X, resp).sum(axis=1)
+    Sg = np.zeros(shape=(X.shape[0], X.shape[0]))
+    for i in range(X.shape[1]):
+        xi = vcol(X[:, i])
+        Sg += resp[i]*np.dot(xi, xi.T)
+
+    return (Zg, Fg, Sg) 
+
+def splitGMM(gmm, alpha=0.1):
+    newGMM = []
+    for i in range(len(gmm)):
+        w = gmm[i][0]
+        mu = gmm[i][1]
+        C = gmm[i][2]
+        U, s, Vh = np.linalg.svd(C)
+        d = U[:, 0:1] * s[0]**0.5 * alpha
+        newGMM.append((w/2, mu + d, C))
+        newGMM.append((w/2, mu - d, C))
+
+    return newGMM
+
+def EM(D, gmm, precision=1e-6, psi=0, diag=False, tied=False):
+    ll = sys.float_info.min
+    end = False
+    while not end:
+        resps, ll_n = E_step(D, gmm)
+        if np.abs(ll-ll_n) < precision:
+            break
+        ll = ll_n
+        gmm = M_step(D, resps, psi, diag, tied)
+
+    return gmm, ll
+
+def LBG(D, gmm=None, precision=1e-6, psi=0, diag=False, tied=False, alpha=0.1):
+    mu = vcol(D.mean(1))
+    C = (1/D.shape[1])*np.dot(D - mu, (D - mu).T)
+    
+    if gmm == None:
+        U, s, _ = np.linalg.svd(C)
+        s[s < psi] = psi
+        C = np.dot(U, vcol(s)*U.T)
+        gmm = [(1.0, mu, C)]
+    else:
+        gmm = splitGMM(gmm, alpha)
+
+    ll = sys.float_info.min
+    end = False
+    while not end:
+        resps, ll_n = E_step(D, gmm)
+        if np.abs(ll - ll_n) < 1e-6:
+            break
+        ll = ll_n
+        gmm = M_step(D, resps, psi, diag, tied)
+
+    return gmm, ll
+
+def LBG_wrap(D, gmm=None, n_iter=1, precision=1e-6, psi=0, diag=False, tied=False, alpha=0.1):
+    for i in range(n_iter):
+        [gmm, ll] = LBG(D, gmm, precision, psi, diag, tied, alpha)
+
+    return gmm, ll

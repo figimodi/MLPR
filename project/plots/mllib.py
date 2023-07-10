@@ -196,6 +196,34 @@ def LDA_plot(D, L, m=2):
 
     return Dp
 
+def PCA_data_variance(D):
+    mu = D.mean(1) # mu will be a row vector so we have to convert it into a column vector
+    Dc = D - vcol(mu) # centered dataset D - the column representation of mu
+    C = (1/D.shape[1])*np.dot(Dc, Dc.T) # C is the covariance matrix
+
+    # find eigenvalues and eigenvectors with the function numpy.linalg.eigh
+    s, U = np.linalg.eigh(C) # eigh returns the eigenvalues and the eignevectors sorted from smallest to larger
+
+    s = np.sort(s)[::-1]
+    y = []
+
+    for i in range(len(s)):
+        n = s[0:i].sum()
+        d = s.sum()
+        y = np.append(y, n/d)
+
+    x = np.linspace(0, 10, 10, endpoint=True)
+    
+    plt.figure()
+    plt.plot(x, y)
+    plt.grid()
+    plt.xlabel('PCA dimensions')
+    plt.ylabel('Fraction of explained variance')
+    plt.savefig('features_analysis_pt2\\explained_variance.png')
+    plt.close()
+
+    return
+
 def heatmaps_binary(D, L):
     DT = D.T
     D_auth = D[:, L==1].T
@@ -263,7 +291,10 @@ def centering(D):
     return D - vcol(mu)
 
 def std_variances(D):
-    C = (1/D.shape[1])*np.dot(D, D.T) # C is the covariance matrix
+    mu = D.mean(1) 
+    Dc = D - vcol(mu) 
+    C = (1/D.shape[1])*np.dot(Dc, Dc.T)
+    
     diag = np.reshape(np.diag(C), (D.shape[0], 1))
     diag = np.sqrt(diag)
 
@@ -272,8 +303,10 @@ def std_variances(D):
     return D
 
 def whitening(Dx, D):
-    C = (1/D.shape[1])*np.dot(D, D.T)
-    
+    mu = D.mean(1) 
+    Dc = D - vcol(mu) 
+    C = (1/D.shape[1])*np.dot(Dc, Dc.T)
+
     sqrtC = sp.linalg.fractional_matrix_power(C, 0.5)
     Dw = np.dot(sqrtC, Dx)
     
@@ -488,13 +521,31 @@ def compute_svm(DTR, LTR, DTE, K, C):
     # we now need to compute the scores and check the predicted lables with threshold
     DTEE = np.vstack([DTE, np.ones((1, DTE.shape[1])) * K])
     return np.dot(w.T, DTEE)
-
-def poly_kernel(x1, x2, c, d, e):
-    return np.power((np.dot(x1.T, x2) + c), d) + e
     
 def compute_svm_polykernel(DTR, LTR, DTE, K, C, d, c):
     Z = LTR * 2 - 1
-    DTRE = np.vstack([DTR, np.ones((1, DTR.shape[1])) * K])
+    Z = np.reshape(Z, (LTR.shape[0], 1))
+
+    Kprime = np.dot(DTR.T, DTR)
+    Zprime = np.dot(Z, Z.T)
+    Kmat = ((Kprime + c) ** d) + K**2
+    H = np.multiply(Zprime, Kmat)
+
+    BC = [(0, C) for i in range(0, DTR.shape[1])]
+    [alpha, f, d2] = sp.optimize.fmin_l_bfgs_b(svm_wraper(H, DTR), np.zeros((DTR.shape[1],1)), bounds=BC, factr=1.0)
+    
+    S = np.ones((DTE.shape[1]))
+
+    alpha = np.reshape(alpha, (alpha.shape[0], 1))
+    az = np.multiply(alpha, Z)
+    Kprime = np.dot(DTR.T, DTE)
+    Kmat = ((Kprime + c) ** d) + K**2
+    S = np.multiply(az, Kmat).sum(axis=0)
+    
+    return S
+
+def compute_svm_RBF(DTR, LTR, DTE, K, C, g):
+    Z = LTR * 2 - 1
     
     Z = np.reshape(Z, (LTR.shape[0], 1))
     H = np.dot(Z, Z.T)
@@ -502,19 +553,17 @@ def compute_svm_polykernel(DTR, LTR, DTE, K, C, d, c):
     # will compute H in with for loops
     for i in range(0, DTR.shape[1]):
         for j in range(0, DTR.shape[1]):
-            H[i][j] *= poly_kernel(DTRE.T[i], DTRE.T[j], c, d, K**2)
-
+            H[i][j] *= (np.exp(-g*(np.linalg.norm(DTR.T[i] - DTR.T[j]))**2) + K**2)
+            
     BC = [(0, C) for i in range(0, DTR.shape[1])]
     [alpha, f, d2] = sp.optimize.fmin_l_bfgs_b(svm_wraper(H, DTR), np.zeros((DTR.shape[1],1)), bounds=BC, factr=1.0)
     
-    DTEE = np.vstack([DTE, np.ones((1, DTE.shape[1])) * K])
-
     S = np.ones((DTE.shape[1]))
 
     for t in range(0, DTE.shape[1]):
         result = 0
         for i in range(0, DTR.shape[1]):
-            result += alpha[i]*Z[i]*poly_kernel(DTRE.T[i], DTEE.T[t], c, d, K**2)
+            result += alpha[i]*Z[i]*(np.exp(-g*(np.linalg.norm(DTR.T[i] - DTE.T[t]))**2) + K**2)
         S[t] = result
-    
+        
     return S

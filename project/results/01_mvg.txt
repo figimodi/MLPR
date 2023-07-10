@@ -1,0 +1,35 @@
+Standard MVG:
+    NO PCA:
+        min dcf: 0.33522540983606564
+    PCA=9:
+        min dcf: 0.33836065573770485
+    PCA=8:
+        min dcf: 0.3367827868852459
+    PCA=7:
+        min dcf: 0.3330327868852459
+    PCA=6:
+        min dcf: 0.3345696721311475
+
+Naive-Bayes:
+    NO PCA
+        min dcf: 0.4711065573770491
+    PCA=9
+        min dcf: 0.3802049180327869
+    PCA=8
+        min dcf: 0.3905122950819672
+    PCA=7
+        min dcf: 0.38770491803278684
+    PCA=6
+        min dcf: 0.38706967213114757
+
+Tied:
+    NO PCA:
+        min dcf: 0.4758606557377049
+    PCA=9:
+        min dcf: 0.4686885245901639
+    PCA=8:
+        min dcf: 0.4739754098360655
+    PCA=7:
+        min dcf: 0.4674385245901639
+    PCA=6:
+        min dcf: 0.4714959016393442

@@ -15,4 +15,6 @@ if __name__ == '__main__':
     PCA_plot(D, L)
     LDA_plot(D, L)
 
+    PCA_data_variance(D)
+
     heatmaps_binary(D, L)
