@@ -8,11 +8,11 @@ if __name__ == '__main__':
     DPCA7 = PCA(D, L, 7)
     # DPCA6 = PCA(D, L, 6)
 
-    Dc = centering(DPCA7)
-    Ds = std_variances(Dc)
-    Dw = whitening(Ds, DPCA7)
-    Dl = l2(Dw)
-    expD = expand_feature_space(Dl)
+    # Dc = centering(DPCA7)
+    # Ds = std_variances(Dc)
+    # Dw = whitening(Ds, DPCA7)
+    # Dl = l2(Dw)
+    expD = expand_feature_space(DPCA7)
 
     # folds
     K = 10

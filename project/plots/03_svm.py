@@ -9,9 +9,7 @@ if __name__ == '__main__':
     lin_pca7_z = [1.0, 0.4686680327868853, 0.4771311475409836, 0.4755532786885246, 0.4649385245901639, 0.4674385245901639, 0.47305327868852454, 0.473688524590164]
     lin_pca7_zwl = [1.0, 0.3942622950819672, 0.4011270491803278, 0.3861680327868853, 0.3848975409836065, 0.37930327868852454, 0.38241803278688524, 0.38116803278688527]
 
-    kern_nopca_p2_c0 = [1.0, 0.35049180327868856, 0.35331967213114757, 0.35674180327868854, 0.3523565573770492, 0.4195491803278688, 0.9446311475409838, 0.99875]
     kern_nopca_p2_c1 = [1.0, 0.31739754098360656, 0.3020901639344262, 0.3005327868852459, 0.31704918032786883, 0.5029713114754099, 1.0, 0.9962499999999999]
-    
     kern_nopca_p2_c1_z = [1.0, 0.3061475409836065, 0.29114754098360657, 0.2777254098360656, 0.2752254098360656, 0.30213114754098364, 0.3052459016393443, 0.31491803278688524]
     kern_nopca_p2_c1_zwl = [1.0, 0.3958811475409836, 0.3845696721311475, 0.34516393442622956, 0.29430327868852457, 0.2911270491803279, 0.3048975409836065, 0.31459016393442624]
     
@@ -27,8 +25,9 @@ if __name__ == '__main__':
     kern_pca7_p3_c1_zwl = [1.0, 0.3345901639344262, 0.3392622950819672, 0.28864754098360657, 0.2639959016393443, 0.2805532786885246, 0.3461065573770492, 0.3661270491803279]
 
     C = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1, 10, 100]
+    kern_nopca_rbf_g5 = [0.4948975409836066, 0.4727254098360656, 0.45495901639344266]
     kern_nopca_rbf_g4 = [1.0, 0.99375, 0.99375, 0.5411475409836065, 0.45586065573770496, 0.4202254098360656, 0.3836475409836066, 0.28799180327868856]
-    kern_nopca_rbf_g3 = [1.0, 0.99375, 0.99375, 0.5411475409836065, 0.45586065573770496, 0.4202254098360656, 0.3836475409836066, 0.28799180327868856]
+    kern_nopca_rbf_g3 = [1.0, 0.7789754098360656, 0.7173975409836066, 0.3857991803278688, 0.3333196721311475, 0.29334016393442625, 0.27711065573770494, 0.3048770491803279]
     kern_nopca_rbf_g2 = [1.0, 0.5786065573770491, 0.5786065573770491, 0.4582172131147541, 0.3820081967213115, 0.3464139344262295, 0.41172131147540986, 0.4035655737704918]
     kern_nopca_rbf_g1 = [1.0, 0.9768647540983606, 0.9768647540983606, 0.7952254098360655, 0.7930327868852459, 0.8505532786885247, 0.7614344262295083, 0.7614344262295083]
     kern_nopca_rbf_g05 = [1.0, 0.9865573770491805, 0.9865573770491805, 0.9865573770491805, 0.9865573770491805, 0.9865573770491805, 0.9865573770491805, 0.9865573770491805]
@@ -51,6 +50,8 @@ if __name__ == '__main__':
     kern_pca7_rbf_g4_zwl = [0.39993852459016394, 0.3989549180327869, 0.39801229508196717]
     kern_pca7_rbf_g3_zwl = [0.39866803278688523, 0.37055327868852456, 0.3805327868852459]
 
+    kern_pca7_p2_zwl_weighted = [0.28274590163934427, 0.27834016393442623, 0.2720901639344262, 0.27118852459016396]
+
     plt.figure()
     plt.plot(x, lin_nopca, label='SVM (No PCA)')
     plt.plot(x, lin_nopca_z, label='SVM (No PCA, z-norm)')
@@ -64,19 +65,6 @@ if __name__ == '__main__':
     plt.legend(loc='upper center')
     plt.grid()
     plt.savefig('03_svm\\linear_svm.png')
-    plt.close()
-
-    plt.figure()
-    plt.plot(x, kern_nopca_p2_c0, label='SVM - poly(2) (No PCA, c = 0)')
-    plt.plot(x, kern_nopca_p2_c1, label='SVM - poly(2) (No PCA, c = 1)')
-    plt.plot(x, kern_nopca_p2_c1_z, label='SVM - poly(2) (No PCA, z-norm, c = 1)')
-    plt.plot(x, kern_nopca_p2_c1_zwl, label='SVM - poly(2) (No PCA, z-norm + whitening + l2-norm, c = 1)')
-    plt.xscale('log')
-    plt.xlabel('C')
-    plt.ylabel('minDCF')
-    plt.legend(loc='upper center')
-    plt.grid()
-    plt.savefig('03_svm\\kern_svm_poly2_nopca.png')
     plt.close()
 
     plt.figure()
@@ -109,36 +97,63 @@ if __name__ == '__main__':
     plt.close()
 
     plt.figure(figsize=(8,8))
-    plt.plot(Cprime, kern_nopca_rbf_g5_z, label='SVM - RBF (No PCA, z-norm, log(γ)=-5)')
-    plt.plot(Cprime, kern_nopca_rbf_g4_z, label='SVM - RBF (No PCA, z-norm, log(γ)=-4)')
-    plt.plot(Cprime, kern_nopca_rbf_g3_z, label='SVM - RBF (No PCA, z-norm, log(γ)=-3)')
-    plt.plot(Cprime, kern_nopca_rbf_g5_zwl, label='SVM - RBF (No PCA, z-norm + whitening + l2-norm, log(γ)=-5)', linestyle='--')
-    plt.plot(Cprime, kern_nopca_rbf_g4_zwl, label='SVM - RBF (No PCA, z-norm + whitening + l2-norm, log(γ)=-4)', linestyle='--')
-    plt.plot(Cprime, kern_nopca_rbf_g3_zwl, label='SVM - RBF (No PCA, z-norm + whitening + l2-norm, log(γ)=-3)', linestyle='--')
+    plt.plot(Cprime, kern_nopca_rbf_g5, label='SVM - RBF (log(γ)=-5)')
+    plt.plot(Cprime, kern_nopca_rbf_g4[5:], label='SVM - RBF (log(γ)=-4)')
+    plt.plot(Cprime, kern_nopca_rbf_g3[5:], label='SVM - RBF (log(γ)=-3)')
+    plt.plot(Cprime, kern_nopca_rbf_g5_z, label='SVM - RBF (z-norm, log(γ)=-5)', linestyle='--')
+    plt.plot(Cprime, kern_nopca_rbf_g4_z, label='SVM - RBF (z-norm, log(γ)=-4)', linestyle='--')
+    plt.plot(Cprime, kern_nopca_rbf_g3_z, label='SVM - RBF (z-norm, log(γ)=-3)', linestyle='--')
     plt.xscale('log')
     plt.xlabel('C')
     plt.ylabel('minDCF')
     plt.legend(loc="upper right")
     plt.grid()
-    plt.savefig('03_svm\\kern_rbf_nopca_preproc.png')
+    plt.savefig('03_svm\\kern_rbf_nopca_preproc1.png')
     plt.close()
 
-    plt.figure(figsize=(10, 10))    
-    plt.plot(Cprime, kern_pca7_rbf_g5, label='SVM - RBF (PCA=7, log(γ)=-5)')
-    plt.plot(Cprime, kern_pca7_rbf_g4, label='SVM - RBF (PCA=7, log(γ)=-4)')
-    plt.plot(Cprime, kern_pca7_rbf_g3, label='SVM - RBF (PCA=7, log(γ)=-3)')
-    plt.plot(Cprime, kern_pca7_rbf_g5_z, label='SVM - RBF (PCA=7, z-norm, log(γ)=-5)', linestyle='--')
-    plt.plot(Cprime, kern_pca7_rbf_g4_z, label='SVM - RBF (PCA=7, z-norm, log(γ)=-4)', linestyle='--')
-    plt.plot(Cprime, kern_pca7_rbf_g3_z, label='SVM - RBF (PCA=7, z-norm, log(γ)=-3)', linestyle='--')
-    plt.plot(Cprime, kern_pca7_rbf_g5_zwl, label='SVM - RBF (PCA=7, z-norm + whitening + l2-norm, log(γ)=-5)', linestyle=':', linewidth=2)
-    plt.plot(Cprime, kern_pca7_rbf_g4_zwl, label='SVM - RBF (PCA=7, z-norm + whitening + l2-norm, log(γ)=-4)', linestyle=':', linewidth=2)
-    plt.plot(Cprime, kern_pca7_rbf_g3_zwl, label='SVM - RBF (PCA=7, z-norm + whitening + l2-norm, log(γ)=-3)', linestyle=':', linewidth=2)
+    plt.figure(figsize=(8,8))
+    plt.plot(Cprime, kern_nopca_rbf_g5, label='SVM - RBF (log(γ)=-5)')
+    plt.plot(Cprime, kern_nopca_rbf_g4[5:], label='SVM - RBF (log(γ)=-4)')
+    plt.plot(Cprime, kern_nopca_rbf_g3[5:], label='SVM - RBF (log(γ)=-3)')
+    plt.plot(Cprime, kern_nopca_rbf_g5_zwl, label='SVM - RBF (z-norm + whitening + l2-norm, log(γ)=-5)', linestyle='--')
+    plt.plot(Cprime, kern_nopca_rbf_g4_zwl, label='SVM - RBF (z-norm + whitening + l2-norm, log(γ)=-4)', linestyle='--')
+    plt.plot(Cprime, kern_nopca_rbf_g3_zwl, label='SVM - RBF (z-norm + whitening + l2-norm, log(γ)=-3)', linestyle='--')
     plt.xscale('log')
     plt.xlabel('C')
     plt.ylabel('minDCF')
-    plt.legend(loc='upper center')
+    plt.legend(loc="upper right")
     plt.grid()
-    plt.savefig('03_svm\\kern_rbf_pca7_preproc.png')
+    plt.savefig('03_svm\\kern_rbf_nopca_preproc2.png')
+    plt.close()
+
+    plt.figure()    
+    plt.plot(Cprime, kern_pca7_rbf_g5, label='SVM - RBF (log(γ)=-5)')
+    plt.plot(Cprime, kern_pca7_rbf_g4, label='SVM - RBF (log(γ)=-4)')
+    plt.plot(Cprime, kern_pca7_rbf_g3, label='SVM - RBF (log(γ)=-3)')
+    plt.plot(Cprime, kern_pca7_rbf_g5_z, label='SVM - RBF (z-norm, log(γ)=-5)', linestyle='--')
+    plt.plot(Cprime, kern_pca7_rbf_g4_z, label='SVM - RBF (z-norm, log(γ)=-4)', linestyle='--')
+    plt.plot(Cprime, kern_pca7_rbf_g3_z, label='SVM - RBF (z-norm, log(γ)=-3)', linestyle='--')
+    plt.xscale('log')
+    plt.xlabel('C')
+    plt.ylabel('minDCF')
+    plt.legend(loc='upper right')
+    plt.grid()
+    plt.savefig('03_svm\\kern_rbf_pca7_preproc1.png')
+    plt.close()
+
+    plt.figure()    
+    plt.plot(Cprime, kern_pca7_rbf_g5, label='SVM - RBF (log(γ)=-5)')
+    plt.plot(Cprime, kern_pca7_rbf_g4, label='SVM - RBF (log(γ)=-4)')
+    plt.plot(Cprime, kern_pca7_rbf_g3, label='SVM - RBF (log(γ)=-3)')
+    plt.plot(Cprime, kern_pca7_rbf_g5_zwl, label='SVM - RBF (z-norm + whitening + l2-norm, log(γ)=-5)', linestyle='--')
+    plt.plot(Cprime, kern_pca7_rbf_g4_zwl, label='SVM - RBF (z-norm + whitening + l2-norm, log(γ)=-4)', linestyle='--')
+    plt.plot(Cprime, kern_pca7_rbf_g3_zwl, label='SVM - RBF (z-norm + whitening + l2-norm, log(γ)=-3)', linestyle='--')
+    plt.xscale('log')
+    plt.xlabel('C')
+    plt.ylabel('minDCF')
+    plt.legend(loc='upper right')
+    plt.grid()
+    plt.savefig('03_svm\\kern_rbf_pca7_preproc2.png')
     plt.close()
 
 
