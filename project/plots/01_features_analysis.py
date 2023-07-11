@@ -1,7 +1,7 @@
-from mllib import *
+from project import mllib
 
 if __name__ == '__main__':
-    (D, L) = load('Train.txt')
+    (D, L) = load('../Train.txt')
 
     # Showing for each feature the distribution of this with respect to the two different classes
     for i in range(D.shape[0]):

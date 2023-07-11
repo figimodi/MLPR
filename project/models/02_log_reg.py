@@ -1,18 +1,18 @@
 from mllib import *
 
 if __name__ == '__main__':
-    D, L = load('Train.txt')
+    D, L = load('../Train.txt')
     
     # DPCA9 = PCA(D, L, 9)
     # DPCA8 = PCA(D, L, 8)
     DPCA7 = PCA(D, L, 7)
     # DPCA6 = PCA(D, L, 6)
 
-    # Dc = centering(DPCA7)
-    # Ds = std_variances(Dc)
-    # Dw = whitening(Ds, DPCA7)
+    Dc = centering(DPCA7)
+    Ds = std_variances(Dc)
+    Dw = whitening(Ds, DPCA7)
     # Dl = l2(Dw)
-    expD = expand_feature_space(DPCA7)
+    expD = expand_feature_space(Dw)
 
     # folds
     K = 10

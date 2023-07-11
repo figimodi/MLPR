@@ -751,3 +751,30 @@ def LBG_wrap(D, gmm=None, n_iter=1, precision=1e-6, psi=0, diag=False, tied=Fals
         [gmm, ll] = LBG(D, gmm, precision, psi, diag, tied, alpha)
 
     return gmm, ll
+
+def ROC_curve(prior, Cfn, Cfp, s_log_ratio, labels):
+
+    FPR = np.array([])
+    TPR = np.array([])
+
+    thresholds = np.array(s_log_ratio)
+
+    thresholds = np.insert(thresholds, 0, sys.float_info.min)
+    thresholds = np.insert(thresholds, 0, sys.float_info.max)
+
+    thresholds = np.sort(thresholds)
+
+    for t in thresholds:
+        c = s_log_ratio > t
+        CMD = np.zeros((2, 2), dtype=int)
+
+        for i, p in enumerate(c):
+            CMD[int(p), int(labels[i])] += 1
+
+        FPR = np.append(FPR, CMD[0, 1]/(CMD[0, 1] + CMD[1, 1]))
+        TPR = np.append(TPR , 1-CMD[0, 1]/(CMD[0, 1] + CMD[1, 1]))
+
+    FPR = np.sort(FPR)
+    TPR = np.sort(TPR)
+
+    return TPR, FPR

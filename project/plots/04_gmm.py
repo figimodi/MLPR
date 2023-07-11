@@ -35,7 +35,19 @@ if __name__ == '__main__':
     plt.ylabel('minDCF')
     plt.legend(loc='upper right')
     plt.grid()
-    plt.savefig('04_gmm\\gmm_pca.png')
+    plt.savefig('04_gmm\\gmm_pca_k1.png')
+    plt.close()
+
+    plt.figure()
+    plt.plot(Kc0prime, gmm_nopca_k2[2:4], label='GMM - Kc1=2 (No PCA)', linewidth=3)
+    plt.plot(Kc0prime, gmm_pca8_k2, label='GMM - Kc1=2 (PCA=8)')
+    plt.plot(Kc0prime, gmm_pca7_k2, label='GMM - Kc1=2 (PCA=7)', linewidth=3, linestyle='--')
+    plt.plot(Kc0prime, gmm_pca6_k2, label='GMM - Kc1=2 (PCA=6)')
+    plt.xlabel('Kc0')
+    plt.ylabel('minDCF')
+    plt.legend(loc='upper right')
+    plt.grid()
+    plt.savefig('04_gmm\\gmm_pca_k2.png')
     plt.close()
 
 

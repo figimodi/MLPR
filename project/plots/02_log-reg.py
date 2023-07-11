@@ -19,6 +19,7 @@ if __name__ == '__main__':
     quad_pca7_cwl = [0.2908196721311475, 0.27084016393442617, 0.30522540983606555, 0.34676229508196715, 0.4086270491803279, 0.46081967213114755, 0.916844262295082]
 
     quad_pca7_z_weight = [0.26961065573770493, 0.27241803278688526, 0.2618032786885246, 0.26491803278688525, 0.39836065573770485, 0.5574180327868853, 0.5586680327868853]
+    quad_pca7_zw_weight = [0.3083606557377049, 0.3083606557377049, 0.3083606557377049, 0.31366803278688526, 0.2755532786885246, 0.31614754098360653, 0.5113934426229507]
     quad_pca7_zwl_weight = [0.2574385245901639, 0.25618852459016395, 0.2955737704918033, 0.32897540983606555, 0.35209016393442627, 0.40647540983606556, 0.9081147540983607]
 
     plt.figure()
@@ -65,8 +66,10 @@ if __name__ == '__main__':
 
     plt.figure()
     plt.plot(x, quad_pca7_z, label='Q-Log-Reg (z-norm)')
+    plt.plot(x, quad_pca7_zw, label='Q-Log-Reg (z-norm, whitening)')
     plt.plot(x, quad_pca7_zwl, label='Q-Log-Reg (z-norm, whitening, l2-norm)')
     plt.plot(x, quad_pca7_z_weight, label='Q-Log-Reg (z-norm) prior weighted', linestyle='--')
+    plt.plot(x, quad_pca7_zw_weight, label='Q-Log-Reg (z-norm, whitening) prior weighted', linestyle='--')
     plt.plot(x, quad_pca7_zwl_weight, label='Q-Log-Reg (z-norm, whitnening, l2-norm) prior weighted', linestyle='--')
     plt.ylim(0.2, 0.6)
     plt.xscale('log')

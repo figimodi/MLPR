@@ -1,7 +1,7 @@
 from mllib import *
 
 if __name__ == '__main__':
-    D, L = load('Train.txt')
+    D, L = load('../Train.txt')
 
     # folds
     K = 10
@@ -31,7 +31,7 @@ if __name__ == '__main__':
         # (mu1, C1) = compute_mu_C(DTR, LTR, 1, True)
 
         # Tied-Covariance
-        C0 = C1 = 1/DTR.shape[1]*(C0*(LTR == 0).sum() + C1*(LTR == 1).sum())
+        # C0 = C1 = 1/DTR.shape[1]*(C0*(LTR == 0).sum() + C1*(LTR == 1).sum())
 
         # compute score matrix S of shape [2, x], which is the number of classes times the number of samples in the test set
         S0 = logpdf_GAU_ND(DTE, mu0, C0)

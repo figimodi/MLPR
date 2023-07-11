@@ -1,7 +1,7 @@
 from mllib import *
 
 if __name__ == '__main__':
-    D, L = load('Train.txt')
+    D, L = load('../Train.txt')
 
     # DPCA9 = PCA(D, L, 9)
     # DPCA8 = PCA(D, L, 8)

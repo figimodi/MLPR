@@ -447,30 +447,19 @@ def DCF_min(prior, Cfn, Cfp, s_log_ratio, labels):
 
     return np.min(DCF)
 
-def bayer_error_plots(prior, Cfn, Cfp, s_log_ratio, labels):
-    effPriorLogOdds = np.linspace(-3, 3, 21)
+def bayer_error_plots(s_log_ratio, labels):
+    effPriorLogOdds = np.linspace(-4, 4, 20)
 
-    dcf = np.array([])
+    actualdcf = np.array([])
     mindcf = np.array([])
 
     effective_prior = 1/(np.exp(-effPriorLogOdds) + 1)
 
-    for i, p in enumerate(effective_prior):
-        print(f"compute for point {i}")
-        dcf = np.append(dcf, DCF_actual(p, 1, 1, s_log_ratio, labels))
+    for p in effective_prior:
+        actualdcf = np.append(actualdcf, DCF_actual(p, 1, 1, s_log_ratio, labels))
         mindcf = np.append(mindcf, DCF_min(p, 1, 1, s_log_ratio, labels))
 
-    np.save("bayes_errors_dcf", dcf)
-    np.save("bayes_errors_mindcf", mindcf)
-
-    plt.plot(effPriorLogOdds, dcf, label='DCF', color='r')
-    plt.plot(effPriorLogOdds, mindcf, label='min DCF', color='b')
-    plt.ylim([0, 1.1])
-    plt.xlim([-3, 3])
-
-    plt.show()
-
-    return
+    return actualdcf, mindcf
 
 def svm_wraper(H, DTR):
     def svm_obj(alpha):
@@ -777,5 +766,30 @@ def ROC_curve(prior, Cfn, Cfp, s_log_ratio, labels):
     FPR = np.sort(FPR)
     TPR = np.sort(TPR)
 
-    plt.plot(FPR, TPR)
-    plt.show()
+    return TPR, FPR
+
+def DET_curve(prior, Cfn, Cfp, s_log_ratio, labels):
+    FPR = np.array([])
+    FNR = np.array([])
+
+    thresholds = np.array(s_log_ratio)
+
+    thresholds = np.insert(thresholds, 0, sys.float_info.min)
+    thresholds = np.insert(thresholds, 0, sys.float_info.max)
+
+    thresholds = np.sort(thresholds)
+
+    for t in thresholds:
+        c = s_log_ratio > t
+        CMD = np.zeros((2, 2), dtype=int)
+
+        for i, p in enumerate(c):
+            CMD[int(p), int(labels[i])] += 1
+
+        FPR = np.append(FPR, CMD[0, 1]/(CMD[0, 1] + CMD[1, 1]))
+        FNR = np.append(FNR, CMD[1, 0]/(CMD[0, 0] + CMD[1, 0]))
+
+    FPR = np.sort(FPR)
+    FNR = np.sort(FNR)[::-1]
+
+    return FNR, FPR
