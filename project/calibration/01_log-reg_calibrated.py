@@ -1,8 +1,8 @@
 from mllib import *
 
 if __name__ == '__main__':
-    S = vrow(np.load('..\\data\\02_svm_scores.npy'))
-    L = np.load('..\\data\\02_svm_labels.npy')
+    S = vrow(np.load('..\\data\\01_log-reg_scores.npy'))
+    L = np.load('..\\data\\01_log-reg_labels.npy')
     
     # folds
     K = 10
@@ -30,15 +30,11 @@ if __name__ == '__main__':
         logRatioCumulative = np.append(logRatioCumulative, logRatio)
         cumulativeLabels = np.append(cumulativeLabels, LTE)
 
-    np.save('..\\data\\02_svm_scores_c_mvg.npy', logRatioCumulative)
-    np.save('..\\data\\02_svm_labels_c_mvg.npy', cumulativeLabels)
+    np.save('..\\data\\01_log-reg_scores_c_mvg.npy', logRatioCumulative)
+    np.save('..\\data\\01_log-reg_labels_c_mvg.npy', cumulativeLabels)
 
     actualDCF, minDCF = bayer_error_plots(logRatioCumulative, cumulativeLabels)
-    np.save('..\\data\\02_svm_actualDCF_c_mvg.npy', actualDCF)
-    np.save('..\\data\\02_svm_minDCF_c_mvg.npy', minDCF)
-
-    print(DCF_min(1/11, 1, 1, logRatioCumulative, cumulativeLabels))
-    print(DCF_actual(1/11, 1, 1, logRatioCumulative, cumulativeLabels))
+    np.save('..\\data\\01_log-reg_actualDCF_c_mvg.npy', actualDCF)
 
     logRatioCumulative = np.array([])
     cumulativeLabels = np.array([])
@@ -56,9 +52,8 @@ if __name__ == '__main__':
         logRatioCumulative = np.append(logRatioCumulative, Sc)
         cumulativeLabels = np.append(cumulativeLabels, LTE)
 
-    np.save('..\\data\\02_svm_scores_c_linear-log.npy', logRatioCumulative)
-    np.save('..\\data\\02_svm_labels_c_linear-log.npy', cumulativeLabels)
+    np.save('..\\data\\01_log-reg_scores_c_linear-log.npy', logRatioCumulative)
+    np.save('..\\data\\01_log-reg_labels_c_linear-log.npy', cumulativeLabels)
 
     actualDCF, minDCF = bayer_error_plots(logRatioCumulative, cumulativeLabels)
-    np.save('..\\data\\02_svm_actualDCF_c_linear-log.npy', actualDCF)
-    np.save('..\\data\\02_svm_minDCF_c_linear-log.npy', minDCF)
+    np.save('..\\data\\01_log-reg_actualDCF_c_linear-log.npy', actualDCF)

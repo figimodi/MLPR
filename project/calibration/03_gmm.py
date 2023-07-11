@@ -34,8 +34,8 @@ if __name__ == '__main__':
         logRatioCumulative = np.append(logRatioCumulative, S)
         cumulativeLabels = np.append(cumulativeLabels, LTE)
 
-    np.save('data\\03_gmm_scores.npy', logRatioCumulative)
-    np.save('data\\03_gmm_labels.npy', cumulativeLabels)
+    np.save('..\\data\\03_gmm_scores.npy', logRatioCumulative)
+    np.save('..\\data\\03_gmm_labels.npy', cumulativeLabels)
 
     minDCF = DCF_min(p, 1, 1, logRatioCumulative, cumulativeLabels)
     actualDCF = DCF_actual(p, 1, 1, logRatioCumulative, cumulativeLabels)
@@ -43,13 +43,13 @@ if __name__ == '__main__':
     print(f"minDCF={minDCF}, actualDCF={actualDCF}")
 
     TPR, FPR = ROC_curve(p, 1, 1, logRatioCumulative, cumulativeLabels)
-    np.save('data\\03_gmm_TPR.npy', TPR)
-    np.save('data\\03_gmm_FPR.npy', FPR)   
+    np.save('..\\data\\03_gmm_TPR.npy', TPR)
+    np.save('..\\data\\03_gmm_FPR.npy', FPR)   
 
     FNR, FPR = DET_curve(p, 1, 1, logRatioCumulative, cumulativeLabels)
-    np.save('data\\03_gmm_FNR.npy', FNR)
-    np.save('data\\03_gmm_reg_FPR.npy', FPR)
+    np.save('..\\data\\03_gmm_FNR.npy', FNR)
+    np.save('..\\data\\03_gmm_reg_FPR.npy', FPR)
 
     actualDCF, minDCF = bayer_error_plots(logRatioCumulative, cumulativeLabels)
-    np.save('data\\03_gmm_actualDCF.npy', actualDCF)
-    np.save('data\\03_gmm_minDCF.npy', minDCF)
+    np.save('..\\data\\03_gmm_actualDCF.npy', actualDCF)
+    np.save('..\\data\\03_gmm_minDCF.npy', minDCF)
