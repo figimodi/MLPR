@@ -4,7 +4,7 @@ if __name__ == '__main__':
     DTR, LTR = load('../Train.txt')
     DTE, LTE = load('../Test.txt')
 
-    P = PCA_directions(DTR, 8)
+    P = PCA_directions(DTR, 7)
     DTR = np.dot(P.T, DTR)
     DTE = np.dot(P.T, DTE)
 
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     DwT = whitening(DsT, DTE)
     DlT = l2(DwT)
 
-    C = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1, 10, 100]
+    C = [1]
 
     # effective prior
     p = 1/11
@@ -59,5 +59,6 @@ if __name__ == '__main__':
 
         print(f'for C={ci}')
         print(DCF_min(p, 1, 1, S, LTE))
+        print(DCF_actual(p, 1, 1, S, LTE))
 
     # print(DCF_actual(p, 1, 1, S, LTE))

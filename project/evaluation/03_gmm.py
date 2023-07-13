@@ -30,5 +30,6 @@ if __name__ == '__main__':
 
             print(f'for Kc1={Kc1i}, Kc0={Kc0i}')
             print(DCF_min(p, 1, 1, S, LTE))
+            print(DCF_actual(p, 1, 1, S, LTE))
     
     # print(DCF_actual(p, 1, 1, S, LTE))

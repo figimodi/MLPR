@@ -42,5 +42,5 @@ if __name__ == '__main__':
 
         print(f'for lambda={li}')
         print(DCF_min(p, 1, 1, S, LTE))
+        print(DCF_actual(p, 1, 1, S, LTE))
 
-    # print(DCF_actual(p, 1, 1, S, LTE))
