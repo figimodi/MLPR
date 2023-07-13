@@ -141,3 +141,22 @@ z-norm + withening + l2 (weighted version pt=1/11):
     using lambda=10
     min dcf: 0.9081147540983607
     ___________________________________
+
+
+FOR EVALUATION SET:
+    for lambda=1e-05
+    0.2673623680241327
+    for lambda=0.0001
+    0.2594871794871795
+    for lambda=0.001
+    0.25709276018099547
+    for lambda=0.01
+    0.26946644042232276
+    for lambda=0.1
+    0.3002469834087481
+    for lambda=1
+    0.3098717948717949
+    for lambda=10
+    0.31237179487179484
+    for lambda=100
+    0.3130071644042232
