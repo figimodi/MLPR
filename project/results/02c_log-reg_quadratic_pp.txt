@@ -183,19 +183,20 @@ FOR PRIOR 0.5:
 
 FOR PRIOR 0.9:
     emp fold:
-
+        min dcf: 0.20782786885245902
     emp fold z-norm:
-
+        min dcf: 0.2006147540983607
     emp fold zwl:
-
+        min dcf: 0.29030737704918036
     0.09 z-norm:
-
+        min dcf: 0.19875
     0.09 zwl:
-
+        min dcf: 0.29127049180327874
     0.5 z-norm:
-
+        min dcf: 0.2079303278688525
     0.5 zwl:
-
+        min dcf: 0.29530737704918036
     0.9 z-norm:
-
+        min dcf: 9.000000000000002
     0.9 zwl:
+        min dcf: 9.000000000000002
