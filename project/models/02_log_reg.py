@@ -8,20 +8,20 @@ if __name__ == '__main__':
     DPCA7 = PCA(D, L, 7)
     # DPCA6 = PCA(D, L, 6)
 
-    # Dc = centering(DPCA7)
-    # Ds = std_variances(Dc)
+    Dc = centering(DPCA7)
+    Ds = std_variances(Dc)
     # Dw = whitening(Ds, DPCA7)
     # Dl = l2(Dw)
-    expD = expand_feature_space(DPCA7)
+    expD = expand_feature_space(Ds)
 
     # folds
     K = 10
 
     # lambda
-    l = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1, 10]
-
+    l = [1e-4]
+    
     # threshold
-    p = 1/11
+    p = 0.5
 
     for li in l:
         logRatioCumulative = np.array([])
@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
             # use maxfun=[>1500], maxiter[>30], factr=[<10**7] to increment precision
             x0 = np.zeros(DTR.shape[0] + 1)
-            x, f, d = sp.optimize.fmin_l_bfgs_b(logreg_obj_wrap(DTR, LTR, li), x0)
+            x, f, d = sp.optimize.fmin_l_bfgs_b(logreg_obj_weight_wrap(DTR, LTR, li, 1/11), x0)
 
             w, b = x[0:-1], x[-1]
             S = np.dot(w, DTE) + b

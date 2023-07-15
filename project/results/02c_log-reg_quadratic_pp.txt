@@ -160,3 +160,42 @@ FOR EVALUATION SET:
     0.31237179487179484
     for lambda=100
     0.3130071644042232
+
+
+FOR PRIOR 0.5:
+    emp fold:
+        min dcf: 0.09418032786885246
+    emp fold z-norm:
+        min dcf: 0.09411885245901638
+    emp fold zwl:
+        min dcf: 0.10598360655737704
+    0.09 z-norm:
+        min dcf: 0.09217213114754098
+    0.09 zwl:
+
+    0.5 z-norm:
+
+    0.5 zwl:
+
+    0.9 z-norm:
+
+    0.9 zwl:
+
+FOR PRIOR 0.9:
+    emp fold:
+
+    emp fold z-norm:
+
+    emp fold zwl:
+
+    0.09 z-norm:
+
+    0.09 zwl:
+
+    0.5 z-norm:
+
+    0.5 zwl:
+
+    0.9 z-norm:
+
+    0.9 zwl:
