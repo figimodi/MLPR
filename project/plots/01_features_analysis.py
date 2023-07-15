@@ -1,4 +1,4 @@
-from project import mllib
+from mllib import *
 
 if __name__ == '__main__':
     (D, L) = load('../Train.txt')

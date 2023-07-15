@@ -213,7 +213,7 @@ def PCA_data_variance(D):
         y = np.append(y, n/d)
 
     x = np.linspace(0, 10, 10, endpoint=True)
-    
+
     plt.figure()
     plt.plot(x, y)
     plt.grid()
