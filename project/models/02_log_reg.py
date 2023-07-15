@@ -21,7 +21,7 @@ if __name__ == '__main__':
     l = [1e-4]
     
     # threshold
-    p = 0.5
+    p = 0.9
 
     for li in l:
         logRatioCumulative = np.array([])

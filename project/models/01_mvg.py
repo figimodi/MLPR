@@ -12,13 +12,13 @@ if __name__ == '__main__':
     DPCA6 = PCA(D, L, 6)
 
     # effective prior
-    p = 1/11
+    p = 0.5
 
     logRatioCumulative = np.array([])
     cumulativeLabels = np.array([])
 
     for i in range(0, K):
-        (DTR, LTR), (DTE, LTE) = k_fold(DPCA6, L, K, i)
+        (DTR, LTR), (DTE, LTE) = k_fold(DPCA7, L, K, i)
 
         # MVG
         # compute mean and covariance for all classes
