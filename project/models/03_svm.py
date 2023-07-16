@@ -23,7 +23,11 @@ if __name__ == '__main__':
     KSVM = 1
     degree = 2
     c_poly = 1
+<<<<<<< HEAD
     G = [1e-5, 1e-4, 1e-3]
+=======
+    g = [1e-5, 1e-4, 1e-3]
+>>>>>>> 088c00a14d53137dd78d2539c07ff62f714b5d14
  
     # effective prior
     p = 0.09
@@ -43,8 +47,16 @@ if __name__ == '__main__':
             cumulativeLabels = np.append(cumulativeLabels, LTE)
 
         mindcf = DCF_min(p, 1, 1, logRatioCumulative, cumulativeLabels)
+        actualDCF = DCF_actual(p, 1, 1, logRatioCumulative, cumulativeLabels)
 
         print(f"using C={ci}")
         print(f"min dcf: {mindcf}")
+        print(f"actual dcf: {actualDCF}")
         print("___________________________________")
+<<<<<<< HEAD
  
+=======
+    
+
+    
+>>>>>>> 088c00a14d53137dd78d2539c07ff62f714b5d14

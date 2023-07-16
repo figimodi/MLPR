@@ -21,7 +21,11 @@ if __name__ == '__main__':
     C = [1]
 
     # effective prior
+<<<<<<< HEAD
     p = 0.9
+=======
+    p = 0.5
+>>>>>>> 088c00a14d53137dd78d2539c07ff62f714b5d14
     
     # folds
     K = 10

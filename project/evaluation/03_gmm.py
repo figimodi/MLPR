@@ -10,11 +10,12 @@ if __name__ == '__main__':
     DTE = np.dot(P.T, DTE)
 
     Kc1 = [1, 2]
-    Kc0 = [4, 8]
+    Kc0 = [4]
  
     # effective prior
-    p = 1/11
+    p = 0.9
 
+    print(p)
     for Kc1i in Kc1:
         for Kc0i in Kc0:
             DTR0 = DTR[:, LTR == 0]
@@ -29,7 +30,7 @@ if __name__ == '__main__':
             S = S1 - S0
 
             print(f'for Kc1={Kc1i}, Kc0={Kc0i}')
-            print(DCF_min(p, 1, 1, S, LTE))
-            print(DCF_actual(p, 1, 1, S, LTE))
+            print(f'min {DCF_min(p, 1, 1, S, LTE)}')
+            print(f'actual {DCF_actual(p, 1, 1, S, LTE)}')
     
     # print(DCF_actual(p, 1, 1, S, LTE))

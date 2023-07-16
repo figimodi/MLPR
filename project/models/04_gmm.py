@@ -46,11 +46,19 @@ if __name__ == '__main__':
                 cumulativeLabels = np.append(cumulativeLabels, LTE)
 
             mindcf = DCF_min(p, 1, 1, logRatioCumulative, cumulativeLabels)
+<<<<<<< HEAD
             actualdcf = DCF_actual(p, 1, 1, logRatioCumulative, cumulativeLabels)
 
             print(f"using Kc1={Kc1}, Kc0={Kc0}")
             print(f"min dcf: {mindcf}")
             print(f"actual dcf: {actualdcf}")
+=======
+            actualDCF = DCF_actual(p, 1, 1, logRatioCumulative, cumulativeLabels)
+
+            print(f"using Kc1={Kc1}, Kc0={Kc0}")
+            print(f"min dcf: {mindcf}")
+            print(f"actual dcf: {actualDCF}")
+>>>>>>> 088c00a14d53137dd78d2539c07ff62f714b5d14
             print("___________________________________")
  
 
