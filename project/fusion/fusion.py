@@ -25,11 +25,42 @@ if __name__ == '__main__':
     minDCF_log_svm_gmm = DCF_min(1/11, 1, 1, S_log_svm_gmm, L)
     actualDCF_log_svm_gmm = DCF_actual(1/11, 1, 1, S_log_svm_gmm, L)
 
+    print("prior=0.09")
     print(f"log+svm: minDCF={minDCF_log_svm}, actualDCF={actualDCF_log_svm}")
     print(f"log+gmm: minDCF={minDCF_log_gmm}, actualDCF={actualDCF_log_gmm}")
     print(f"svm+gmm: minDCF={minDCF_svm_gmm}, actualDCF={actualDCF_svm_gmm}")
     print(f"log+svm+gmm: minDCF={minDCF_log_svm_gmm}, actualDCF={actualDCF_log_svm_gmm}")
 
+    minDCF_log_svm = DCF_min(0.5, 1, 1, S_log_svm, L)
+    actualDCF_log_svm = DCF_actual(0.5, 1, 1, S_log_svm, L)
+    minDCF_log_gmm = DCF_min(0.5, 1, 1, S_log_gmm, L)
+    actualDCF_log_gmm = DCF_actual(0.5, 1, 1, S_log_gmm, L)
+    minDCF_svm_gmm = DCF_min(0.5, 1, 1, S_svm_gmm, L)
+    actualDCF_svm_gmm = DCF_actual(0.5, 1, 1, S_svm_gmm, L)
+    minDCF_log_svm_gmm = DCF_min(0.5, 1, 1, S_log_svm_gmm, L)
+    actualDCF_log_svm_gmm = DCF_actual(0.5, 1, 1, S_log_svm_gmm, L)
+
+    print("prior=0.5")
+    print(f"log+svm: minDCF={minDCF_log_svm}, actualDCF={actualDCF_log_svm}")
+    print(f"log+gmm: minDCF={minDCF_log_gmm}, actualDCF={actualDCF_log_gmm}")
+    print(f"svm+gmm: minDCF={minDCF_svm_gmm}, actualDCF={actualDCF_svm_gmm}")
+    print(f"log+svm+gmm: minDCF={minDCF_log_svm_gmm}, actualDCF={actualDCF_log_svm_gmm}")
+
+    minDCF_log_svm = DCF_min(0.9, 1, 1, S_log_svm, L)
+    actualDCF_log_svm = DCF_actual(0.9, 1, 1, S_log_svm, L)
+    minDCF_log_gmm = DCF_min(0.9, 1, 1, S_log_gmm, L)
+    actualDCF_log_gmm = DCF_actual(0.9, 1, 1, S_log_gmm, L)
+    minDCF_svm_gmm = DCF_min(0.9, 1, 1, S_svm_gmm, L)
+    actualDCF_svm_gmm = DCF_actual(0.9, 1, 1, S_svm_gmm, L)
+    minDCF_log_svm_gmm = DCF_min(0.9, 1, 1, S_log_svm_gmm, L)
+    actualDCF_log_svm_gmm = DCF_actual(0.9, 1, 1, S_log_svm_gmm, L)
+
+    print("prior=0.9")
+    print(f"log+svm: minDCF={minDCF_log_svm}, actualDCF={actualDCF_log_svm}")
+    print(f"log+gmm: minDCF={minDCF_log_gmm}, actualDCF={actualDCF_log_gmm}")
+    print(f"svm+gmm: minDCF={minDCF_svm_gmm}, actualDCF={actualDCF_svm_gmm}")
+    print(f"log+svm+gmm: minDCF={minDCF_log_svm_gmm}, actualDCF={actualDCF_log_svm_gmm}")
+    
     K=10
 
     logRatioCumulative = np.array([])

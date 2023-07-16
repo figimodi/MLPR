@@ -39,26 +39,54 @@ if __name__ == '__main__':
 
     print(DCF_min(1/11, 1, 1, logRatioCumulative, cumulativeLabels))
     print(DCF_actual(1/11, 1, 1, logRatioCumulative, cumulativeLabels))
+    print(DCF_min(0.5, 1, 1, logRatioCumulative, cumulativeLabels))
+    print(DCF_actual(0.5, 1, 1, logRatioCumulative, cumulativeLabels))
+    print(DCF_min(0.9, 1, 1, logRatioCumulative, cumulativeLabels))
+    print(DCF_actual(0.9, 1, 1, logRatioCumulative, cumulativeLabels))
 
-    logRatioCumulative = np.array([])
-    cumulativeLabels = np.array([])
+    # logRatioCumulative = np.array([])
+    # cumulativeLabels = np.array([])
 
-    for i in range(0, K):
-        (DTR, LTR), (DTE, LTE) = k_fold(S, L, K, i)
+    # for i in range(0, K):
+    #     (DTR, LTR), (DTE, LTE) = k_fold(S, L, K, i)
 
-        # use maxfun=[>1500], maxiter[>30], factr=[<10**7] to increment precision
-        x0 = np.zeros(DTR.shape[0] + 1)
-        x, f, d = sp.optimize.fmin_l_bfgs_b(logreg_obj_weight_wrap(DTR, LTR, 1e-4, p), x0)
+    #     # use maxfun=[>1500], maxiter[>30], factr=[<10**7] to increment precision
+    #     x0 = np.zeros(DTR.shape[0] + 1)
+    #     x, f, d = sp.optimize.fmin_l_bfgs_b(logreg_obj_weight_wrap(DTR, LTR, 1e-4, p), x0)
 
-        w, b = x[0:-1], x[-1]
-        Sc = np.dot(w, DTE) + b
+    #     w, b = x[0:-1], x[-1]
+    #     Sc = np.dot(w, DTE) + b
 
-        logRatioCumulative = np.append(logRatioCumulative, Sc)
-        cumulativeLabels = np.append(cumulativeLabels, LTE)
+    #     logRatioCumulative = np.append(logRatioCumulative, Sc)
+    #     cumulativeLabels = np.append(cumulativeLabels, LTE)
 
-    np.save('..\\data\\02_svm_scores_c_linear-log.npy', logRatioCumulative)
-    np.save('..\\data\\02_svm_labels_c_linear-log.npy', cumulativeLabels)
+    # np.save('..\\data\\02_svm_scores_c_linear-log.npy', logRatioCumulative)
+    # np.save('..\\data\\02_svm_labels_c_linear-log.npy', cumulativeLabels)
 
-    actualDCF, minDCF = bayer_error_plots(logRatioCumulative, cumulativeLabels)
-    np.save('..\\data\\02_svm_actualDCF_c_linear-log.npy', actualDCF)
-    np.save('..\\data\\02_svm_minDCF_c_linear-log.npy', minDCF)
+    # actualDCF, minDCF = bayer_error_plots(logRatioCumulative, cumulativeLabels)
+    # np.save('..\\data\\02_svm_actualDCF_c_linear-log.npy', actualDCF)
+    # np.save('..\\data\\02_svm_minDCF_c_linear-log.npy', minDCF)
+
+    # logRatioCumulative = np.array([])
+    # cumulativeLabels = np.array([])
+
+    # expD = expand_feature_space(S)
+    # for i in range(0, K):
+    #     (DTR, LTR), (DTE, LTE) = k_fold(expD, L, K, i)
+
+    #     # use maxfun=[>1500], maxiter[>30], factr=[<10**7] to increment precision
+    #     x0 = np.zeros(DTR.shape[0] + 1)
+    #     x, f, d = sp.optimize.fmin_l_bfgs_b(logreg_obj_weight_wrap(DTR, LTR, 1e-2, p), x0)
+
+    #     w, b = x[0:-1], x[-1]
+    #     Sc = np.dot(w, DTE) + b
+
+    #     logRatioCumulative = np.append(logRatioCumulative, Sc)
+    #     cumulativeLabels = np.append(cumulativeLabels, LTE)
+
+    # np.save('..\\data\\02_svm_scores_c_q-log.npy', logRatioCumulative)
+    # np.save('..\\data\\02_svm_labels_c_q-log.npy', cumulativeLabels)
+
+    # actualDCF, minDCF = bayer_error_plots(logRatioCumulative, cumulativeLabels)
+    # np.save('..\\data\\02_svm_actualDCF_c_q-log.npy', actualDCF)
+    # np.save('..\\data\\02_svm_minDCF_c_q-log.npy', minDCF)

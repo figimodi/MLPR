@@ -21,11 +21,10 @@ if __name__ == '__main__':
     expDT = expand_feature_space(DlT)
     
     # lambda
-    l = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1, 10, 100]
+    l = [1e-3, 1e-4]
 
     # threshold
-    p = 1/11
-    
+    p = 0.9
 
     for li in l:
         x0 = np.zeros(expD.shape[0] + 1)

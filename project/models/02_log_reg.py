@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
             # use maxfun=[>1500], maxiter[>30], factr=[<10**7] to increment precision
             x0 = np.zeros(DTR.shape[0] + 1)
-            x, f, d = sp.optimize.fmin_l_bfgs_b(logreg_obj_weight_wrap(DTR, LTR, li, 0.9), x0)
+            x, f, d = sp.optimize.fmin_l_bfgs_b(logreg_obj_wrap(DTR, LTR, li), x0)
 
             w, b = x[0:-1], x[-1]
             S = np.dot(w, DTE) + b
@@ -41,7 +41,9 @@ if __name__ == '__main__':
             cumulativeLabels = np.append(cumulativeLabels, LTE)
 
         mindcf = DCF_min(p, 1, 1, logRatioCumulative, cumulativeLabels)
+        actualdcf = DCF_actual(p, 1, 1, logRatioCumulative, cumulativeLabels)
 
         print(f"using lambda={li}")
         print(f"min dcf: {mindcf}")
+        print(f"actual dcf: {actualdcf}")
         print("___________________________________")

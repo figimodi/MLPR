@@ -12,7 +12,7 @@ if __name__ == '__main__':
     DPCA6 = PCA(D, L, 6)
 
     # effective prior
-    p = 0.5
+    p = 0.9
 
     logRatioCumulative = np.array([])
     cumulativeLabels = np.array([])

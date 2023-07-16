@@ -13,16 +13,14 @@ if __name__ == '__main__':
     # Dw = whitening(Ds, DPCA7)
     # Dl = l2(Dw)
 
-    Kc1s = [1, 2]
-    Kc0s = [4, 8]
+    Kc1s = [1]
+    Kc0s = [4]
 
     # folds
     K = 10
  
     # effective prior
     p = 1/11
-
-
 
     for Kc1 in Kc1s:
         for Kc0 in Kc0s:
@@ -48,9 +46,11 @@ if __name__ == '__main__':
                 cumulativeLabels = np.append(cumulativeLabels, LTE)
 
             mindcf = DCF_min(p, 1, 1, logRatioCumulative, cumulativeLabels)
+            actualdcf = DCF_actual(p, 1, 1, logRatioCumulative, cumulativeLabels)
 
             print(f"using Kc1={Kc1}, Kc0={Kc0}")
             print(f"min dcf: {mindcf}")
+            print(f"actual dcf: {actualdcf}")
             print("___________________________________")
  
 
