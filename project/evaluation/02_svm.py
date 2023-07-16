@@ -4,7 +4,7 @@ if __name__ == '__main__':
     DTR, LTR = load('../Train.txt')
     DTE, LTE = load('../Test.txt')
 
-    P = PCA_directions(DTR, 6)
+    P = PCA_directions(DTR, 7)
     DTR = np.dot(P.T, DTR)
     DTE = np.dot(P.T, DTE)
 
@@ -21,11 +21,7 @@ if __name__ == '__main__':
     C = [1]
 
     # effective prior
-<<<<<<< HEAD
-    p = 0.9
-=======
-    p = 0.5
->>>>>>> 088c00a14d53137dd78d2539c07ff62f714b5d14
+    p = 1/11
     
     # folds
     K = 10
@@ -66,3 +62,7 @@ if __name__ == '__main__':
         print(DCF_actual(p, 1, 1, S, LTE))
 
     # print(DCF_actual(p, 1, 1, S, LTE))
+
+    FNR, FPR = DET_curve(p, 1, 1, S, LTE)
+    np.save('..\\data\\02_svm_eval_FNR.npy', FNR)
+    np.save('..\\data\\02_svm_eval_FPR.npy', FPR)

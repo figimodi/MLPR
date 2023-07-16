@@ -9,11 +9,11 @@ if __name__ == '__main__':
     DTR = np.dot(P.T, DTR)
     DTE = np.dot(P.T, DTE)
 
-    Kc1 = [1, 2]
+    Kc1 = [1]
     Kc0 = [4]
  
     # effective prior
-    p = 0.9
+    p = 1/11
 
     print(p)
     for Kc1i in Kc1:
@@ -34,3 +34,7 @@ if __name__ == '__main__':
             print(f'actual {DCF_actual(p, 1, 1, S, LTE)}')
     
     # print(DCF_actual(p, 1, 1, S, LTE))
+
+    FNR, FPR = DET_curve(p, 1, 1, S, LTE)
+    np.save('..\\data\\03_gmm_eval_FNR.npy', FNR)
+    np.save('..\\data\\03_gmm_eval_FPR.npy', FPR)

@@ -21,10 +21,10 @@ if __name__ == '__main__':
     expDT = expand_feature_space(DlT)
     
     # lambda
-    l = [1e-3, 1e-4]
+    l = [1e-4]
 
     # threshold
-    p = 0.9
+    p = 1/11
 
     for li in l:
         x0 = np.zeros(expD.shape[0] + 1)
@@ -43,3 +43,6 @@ if __name__ == '__main__':
         print(DCF_min(p, 1, 1, S, LTE))
         print(DCF_actual(p, 1, 1, S, LTE))
 
+    FNR, FPR = DET_curve(p, 1, 1, S, LTE)
+    np.save('..\\data\\01_log-reg_eval_FNR.npy', FNR)
+    np.save('..\\data\\01_log-reg_eval_FPR.npy', FPR)
