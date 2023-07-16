@@ -4,7 +4,7 @@ if __name__ == '__main__':
     DTR, LTR = load('../Train.txt')
     DTE, LTE = load('../Test.txt')
 
-    P = PCA_directions(DTR, 7)
+    P = PCA_directions(DTR, 6)
     DTR = np.dot(P.T, DTR)
     DTE = np.dot(P.T, DTE)
 
@@ -21,7 +21,7 @@ if __name__ == '__main__':
     C = [1]
 
     # effective prior
-    p = 1/11
+    p = 0.5
     
     # folds
     K = 10
